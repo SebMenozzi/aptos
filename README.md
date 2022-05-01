@@ -30,6 +30,6 @@ $ make protos
 ```
 
 ```bash
-# Launch Xcode for convinience
+# Launch Xcode, for convenience
 $ make xcode
 ```
