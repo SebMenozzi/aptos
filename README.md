@@ -14,7 +14,7 @@ $ cargo install cargo-lipo
 Inside the core folder:
 
 ```bash
-# Has to be done oncem, it will install iOS targets for rust
+# Has to be done once, it will install iOS targets for rust
 $ make init_ios
 # Generate the static library for iOS
 $ make ios
