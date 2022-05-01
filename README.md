@@ -3,26 +3,33 @@
 ## Dependencies
 
 ```bash
-# Install this before
+# Install Swift Protobuf to generate swift implem of our .proto
 $ brew install swift-protobuf
+# Cargo Lipo is used to generate a static library for iOS
 $ cargo install cargo-lipo
 ```
 
 ## Core
 
+Inside the core folder:
+
 ```bash
-# Build the core
-$ cd core && make ios
+# Has to be done oncem, it will install iOS targets for rust
+$ make init_ios
+# Generate the static library for iOS
+$ make ios
 ```
 
 ## App
 
+Inside the app folder:
+
 ```bash
-# Generate proto
-$ cd app && make protos
+# Will generate swift protos via the protoc compiler
+$ make protos
 ```
 
 ```bash
-# Launch Xcode
-$ cd app && make xcode
+# Launch Xcode for convinience
+$ make xcode
 ```
