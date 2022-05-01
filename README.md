@@ -29,9 +29,6 @@ Inside the app folder:
 ```bash
 # Will generate swift protos via the protoc compiler
 $ make protos
-```
-
-```bash
 # Launch Xcode, for convenience
 $ make xcode
 ```
