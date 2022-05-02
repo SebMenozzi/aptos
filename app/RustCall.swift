@@ -26,7 +26,7 @@ func rustCall<Response: SwiftProtobuf.Message>(_ core: OpaquePointer, _ request:
 
     let response = requestData.withUnsafeBytes { ptr -> RustData in
         let ptr = ptr.bindMemory(to: UInt8.self).baseAddress
-        return rust_call(core, ptr, UInt(requestData.count))
+        return rust_call_sync(core, ptr, UInt(requestData.count))
     }
 
     let (responseData, error) = rustDataToData(response)
@@ -62,8 +62,6 @@ private class SwiftCallback {
 
     func run(_ data: Data?, _ error: RustError?) {
         let block = {
-            print("swift: running callback on thread `\(Thread.current)`")
-            
             if let error = error {
                 self.errorCallback(error)
             } else {
@@ -105,8 +103,6 @@ func rustCallAsync<Response: SwiftProtobuf.Message>(
             defer { rust_free_data(response) }
 
             let swiftCallback: SwiftCallback = Unmanaged.fromOpaque(swiftCallbackPtr!).takeRetainedValue()
-
-            print("swift: before running callback on thread `\(Thread.current)`")
 
             swiftCallback.run(data, resError)
         }

@@ -5,9 +5,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     
     private var core: OpaquePointer {
-        let aptosURL = "https://fullnode.devnet.aptoslabs.com"
+        let aptosRestURL = "https://fullnode.devnet.aptoslabs.com"
+        let aptosFaucetURL = "https://faucet.devnet.aptoslabs.com"
 
-        return create_core(aptosURL)
+        return create_core(aptosRestURL, aptosFaucetURL)
     }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
@@ -17,15 +18,76 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         window?.rootViewController = ViewController()
         
-        let text = greeting(core, verb: "Hola", name: "Seb")
-        print(text)
+        let alice = createAccount(core)
+        let bob = createAccount(core)
+        print("Alice address: {}", alice.address)
+        print("Bob address: {}", bob.address)
         
-        sleep(core, seconds: 3) { result in
-            print(result)
-        }
+        let group = DispatchGroup()
         
-        backtrace(core, sync: true) { result in
-            print(result)
+        DispatchQueue.global().async {
+            group.enter()
+            self.fundAccount(
+                self.core,
+                address: alice.address,
+                amount: 100
+            ) { [weak self] transaction in
+                guard let self = self else { return }
+                
+                print("Alice fund transaction: \(transaction.hash)")
+                
+                self.getAccountBalance(
+                    self.core,
+                    address: alice.address
+                ) { balance in
+                    defer { group.leave() }
+                    
+                    print("Alice balance: \(balance)")
+                }
+            }
+            
+            group.enter()
+            self.fundAccount(
+                self.core,
+                address: bob.address,
+                amount: 10
+            ) { [weak self] transaction in
+                guard let self = self else { return }
+                
+                print("Bob fund transaction: \(transaction.hash)")
+                
+                self.getAccountBalance(
+                    self.core,
+                    address: bob.address
+                ) { balance in
+                    defer { group.leave() }
+                    
+                    print("Bob balance: \(balance)")
+                }
+            }
+            
+            group.wait()
+            
+            group.notify(queue: .global()) {
+                self.transfer(
+                    self.core,
+                    amount: 25,
+                    addressFrom: alice.address,
+                    addressTo: bob.address,
+                    signingKey: alice.signingKey
+                ) { [weak self] transaction in
+                    guard let self = self else { return }
+                    
+                    print("Transfer transaction: \(transaction.hash)")
+                    
+                    self.getAccountBalance(
+                        self.core,
+                        address: bob.address
+                    ) { balance in
+                        print("Bob balance: \(balance)")
+                    }
+                }
+            }
         }
         
         return true
@@ -33,29 +95,75 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     // MARK: - Private
     
-    private func greeting(_ core: OpaquePointer, verb: String, name: String) -> String {
-        let greetingReq = CoreProto_GreetingRequest.with {
-            $0.verb = verb
-            $0.name = name
+    private func createAccount(_ core: OpaquePointer) -> CoreProto_CreateAccountResponse {
+        let request = CoreProto_Request.with {
+            $0.createAccount = CoreProto_CreateAccountRequest()
         }
-        let req = CoreProto_Request.with {
-            $0.greeting = greetingReq
-        }
-        let res: CoreProto_GreetingResponse = try! rustCall(core, req)
-        return res.text
+        
+        let response: CoreProto_CreateAccountResponse = try! rustCall(core, request)
+        
+        return response
     }
 
-    private func sleep(_ core: OpaquePointer, seconds: Int, closure: @escaping (String) -> Void) {
-        let sleepReq = CoreProto_SleepRequest.with {
-            $0.millis = UInt64(seconds * 1000)
+    private func fundAccount(
+        _ core: OpaquePointer,
+        address: String,
+        amount: UInt64,
+        closure: @escaping (CoreProto_Transaction) -> Void
+    ) {
+        let fundAccountRequest = CoreProto_FundAccountRequest.with {
+            $0.address = address
+            $0.amount = amount
         }
         
         let req = CoreProto_Request.with {
-            $0.sleep = sleepReq
+            $0.fundAccount = fundAccountRequest
         }
         
-        rustCallAsync(core, req) { (res: CoreProto_SleepResponse) in
-            closure(res.text)
+        rustCallAsync(core, req) { (res: CoreProto_FundAccountResponse) in
+            closure(res.transactions.first!)
+        }
+    }
+    
+    private func getAccountBalance(
+        _ core: OpaquePointer,
+        address: String,
+        closure: @escaping (UInt64) -> Void
+    ) {
+        let getAccountBalanceRequest = CoreProto_GetAccountBalanceRequest.with {
+            $0.address = address
+        }
+        
+        let req = CoreProto_Request.with {
+            $0.getAccountBalance = getAccountBalanceRequest
+        }
+        
+        rustCallAsync(core, req) { (res: CoreProto_GetAccountBalanceResponse) in
+            closure(res.balance)
+        }
+    }
+    
+    private func transfer(
+        _ core: OpaquePointer,
+        amount: UInt64,
+        addressFrom: String,
+        addressTo: String,
+        signingKey: Data,
+        closure: @escaping (CoreProto_Transaction) -> Void
+    ) {
+        let transferRequest = CoreProto_TransferRequest.with {
+            $0.amount = amount
+            $0.addressFrom = addressFrom
+            $0.addressTo = addressTo
+            $0.signingKey = Data(signingKey)
+        }
+        
+        let req = CoreProto_Request.with {
+            $0.transfer = transferRequest
+        }
+        
+        rustCallAsync(core, req) { (res: CoreProto_TransferResponse) in
+            closure(res.transaction)
         }
     }
 

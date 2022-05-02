@@ -17,15 +17,30 @@ typedef struct RustCallback {
   void (*callback)(const void*, struct RustData);
 } RustCallback;
 
-struct Core *create_core(const char *aptos_url);
+/**
+ * Create a core object allocated to the heap, will return a raw pointer
+ */
+struct Core *create_core(const char *aptos_rest_url, const char *aptos_faucet_url);
 
+/**
+ * Deallocate core object
+ */
 void free_core(struct Core *core);
 
-struct RustData rust_call(struct Core *core, const uint8_t *data, uintptr_t len);
+/**
+ * Call a synchronous request
+ */
+struct RustData rust_call_sync(struct Core *core, const uint8_t *data, uintptr_t len);
 
+/**
+ * Call an asynchronous request
+ */
 void rust_call_async(struct Core *core,
                      const uint8_t *data,
                      uintptr_t len,
                      struct RustCallback callback);
 
+/**
+ * Free rust data
+ */
 void rust_free_data(struct RustData data);

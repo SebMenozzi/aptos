@@ -7,7 +7,7 @@ init_android:
 	rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android;
 
 macos:
-	RUST_BACKTRACE=full cargo build;
+	cargo build;
 	cp target/debug/libcore.a ../app/Frameworks/libcore-macos.a;
 
 ios:
@@ -18,10 +18,7 @@ check:
 	cargo check;
 
 clean:
-	rm -rf target;
+	cargo clean;
 
 prettier:
 	rustfmt src/*.rs;
-
-%:
-	@:

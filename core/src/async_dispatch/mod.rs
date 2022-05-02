@@ -1,6 +1,6 @@
-use log::{error, info};
 use std::ffi::c_void;
 use prost::Message;
+use std::sync::Arc;
 
 use crate::core::Core;
 use crate::core_proto::*;
@@ -9,7 +9,7 @@ use crate::rust_data::RustData;
 
 lazy_static::lazy_static! {
     static ref RUNTIME: tokio::runtime::Runtime = {
-        error!(target: "rust", "Failed to create tokio runtime");
+        log::error!(target: "rust", "Failed to create tokio runtime");
 
         tokio::runtime::Runtime::new().expect("Failed to create tokio runtime")
     };
@@ -40,24 +40,34 @@ impl RustCallback {
 // Check that the callback has been deallocated
 impl Drop for RustCallback {
     fn drop(&mut self) {
-        info!(target: "rust", "{:?} at {:?} dropped!", self, &self as *const _);
+        log::info!(target: "rust", "{:?} at {:?} dropped!", self, &self as *const _);
     }
 }
 
-pub fn dispatch_request_async(core: *mut Core, request: Request, callback: RustCallback) {
-    RUNTIME.spawn(async move {
-        info!(target: "rust", "Serving async request on {:?}", std::thread::current());
+unsafe impl Send for Core {}
+unsafe impl Sync for Core {}
 
-        use crate::core_proto::request::AsyncRequests::{Sleep, AsyncBacktrace};
+pub fn dispatch_request_async(core: *mut Core, request: Request, callback: RustCallback) {
+    assert!(!core.is_null());
+
+    let core_ref = unsafe { core.as_ref().unwrap() };
+    let core_arc = Arc::new(core_ref);
+
+    RUNTIME.spawn(async move {        
+        log::info!(target: "rust", "Serving asynchronous request on {:?}", std::thread::current());
+
+        use crate::core_proto::request::AsyncRequests::{AsyncBacktrace, FundAccount, GetAccountBalance, Transfer};
 
         let bytes = match request.async_requests {
             Some(req) => {
                 match req {
-                    Sleep(sleep_req) => handle_sleep(sleep_req).await.encode_to_vec(),
                     AsyncBacktrace(async_backtrace_req) => async { handle_backtrace(async_backtrace_req) }.await.encode_to_vec(),
+                    FundAccount(fund_account_req) => handle_fund_account(core_arc, fund_account_req).await.encode_to_vec(),
+                    GetAccountBalance(get_account_balance_req) => handle_get_account_balance(core_arc, get_account_balance_req).await.encode_to_vec(),
+                    Transfer(transfer_req) => handle_transfer(core_arc, transfer_req).await.encode_to_vec(),
                 }
             },
-            None => panic!("Invalid async request"),
+            None => panic!("Invalid asynchronous request"),
         };
 
         callback.run(RustData::from(bytes));
