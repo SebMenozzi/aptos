@@ -9,8 +9,6 @@ use crate::rust_data::RustData;
 
 lazy_static::lazy_static! {
     static ref RUNTIME: tokio::runtime::Runtime = {
-        log::error!(target: "rust", "Failed to create tokio runtime");
-
         tokio::runtime::Runtime::new().expect("Failed to create tokio runtime")
     };
 }
@@ -40,22 +38,19 @@ impl RustCallback {
 // Check that the callback has been deallocated
 impl Drop for RustCallback {
     fn drop(&mut self) {
-        log::info!(target: "rust", "{:?} at {:?} dropped!", self, &self as *const _);
+        log::debug!(target: "rust", "{:?} at {:?} dropped!", self, &self as *const _);
     }
 }
 
 unsafe impl Send for Core {}
 unsafe impl Sync for Core {}
 
-pub fn dispatch_request_async(core: *mut Core, request: Request, callback: RustCallback) {
+pub fn dispatch_request_async(core: *const Core, request: Request, callback: RustCallback) {
     assert!(!core.is_null());
 
-    let core_ref = unsafe { core.as_ref().unwrap() };
-    let core_arc = Arc::new(core_ref);
+    let core_arc = unsafe { Arc::from_raw(core) };
 
     RUNTIME.spawn(async move {        
-        log::info!(target: "rust", "Serving asynchronous request on {:?}", std::thread::current());
-
         use crate::core_proto::request::AsyncRequests::{AsyncBacktrace, FundAccount, GetAccountBalance, Transfer};
 
         let bytes = match request.async_requests {
@@ -67,7 +62,7 @@ pub fn dispatch_request_async(core: *mut Core, request: Request, callback: RustC
                     Transfer(transfer_req) => handle_transfer(core_arc, transfer_req).await.encode_to_vec(),
                 }
             },
-            None => panic!("Invalid asynchronous request"),
+            None => return log::error!("Unhandled asynchronous request"),
         };
 
         callback.run(RustData::from(bytes));

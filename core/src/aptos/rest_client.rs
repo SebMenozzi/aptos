@@ -33,20 +33,12 @@ impl AptosRestClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("GetAccountRequest: {}", error);
-                    return Err(AptosError::GetAccountRequest)
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
                 },
             };
 
-        let account: GetAccountResponse = match response.json::<GetAccountResponse>().await {
-            Ok(account) => account,
-            Err(error) => {
-                log::error!("GetAccountResponse: {}", error);
-                return Err(AptosError::GetAccountResponse)
-            },
-        };
-
-        return Ok(account);
+        return handle_response::<GetAccountResponse>(response).await;
     }
 
     /// Returns all resources associated with the account
@@ -63,20 +55,12 @@ impl AptosRestClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("GetAccountResourceRequest: {}", error);
-                    return Err(AptosError::GetAccountResourceRequest)
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
                 },
             };
 
-        let account_resource = match response.json().await {
-            Ok(resource) => resource,
-            Err(error) => {
-                log::error!("GetAccountResourceResponse: {}", error);
-                return Err(AptosError::GetAccountResourceResponse)
-            },
-        };
-
-        return Ok(account_resource);
+        return handle_response::<serde_json::Value>(response).await;
     }
 
     /// Generate a transaction request that can be submitted to produce a raw transaction that can be signed
@@ -95,7 +79,7 @@ impl AptosRestClient {
         let sequence_number: u64 = match account.sequence_number.parse::<u64>() {
             Ok(number) => number,
             Err(error) => {
-                log::error!("InvalidSequenceNumber: {}", error);
+                log::error!("{}", error);
                 return Err(AptosError::InvalidSequenceNumber)
             },
         };
@@ -103,7 +87,7 @@ impl AptosRestClient {
         let expiration_time: Duration = match std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH) {
             Ok(time) => time,
             Err(error) => {
-                log::error!("TimeWentBackwards: {}", error);
+                log::error!("{}", error);
                 return Err(AptosError::TimeWentBackwards)
             },
         };
@@ -138,17 +122,14 @@ impl AptosRestClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("CreateTransactionSigningRequest: {}", error);
-                    return Err(AptosError::CreateTransactionSigningRequest)
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
                 },
             };
 
-        let signing_message = match response.json::<CreateTransactionSigningResponse>().await {
+        let signing_message = match handle_response::<CreateTransactionSigningResponse>(response).await {
             Ok(message) => message,
-            Err(error) => {
-                log::error!("CreateTransactionSigningResponse: {}", error);
-                return Err(AptosError::CreateTransactionSigningResponse)
-            },
+            Err(error) => return Err(error),
         };
 
         // TODO: Convert unwrap to error to gracefully display the issue here
@@ -185,20 +166,12 @@ impl AptosRestClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("SubmitTransactionRequest: {}", error);
-                    return Err(AptosError::SubmitTransactionRequest)
-                },
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest);
+                }
             };
 
-        let pending_transaction = match response.json::<TransactionResponse>().await {
-            Ok(t) => t,
-            Err(error) => {
-                println!("SubmitTransactionResponse: {}", error);
-                return Err(AptosError::SubmitTransactionResponse)
-            },
-        };
-
-        return Ok(pending_transaction);
+        return handle_response::<TransactionResponse>(response).await;
     }
 
     /// Retrieve a transaction in the blockchain.
@@ -213,19 +186,11 @@ impl AptosRestClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("GetTransactionRequest: {}", error);
-                    return Err(AptosError::GetTransactionRequest)
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
                 },
             };
 
-        let transaction = match response.json::<TransactionResponse>().await {
-            Ok(t) => t,
-            Err(error) => {
-                log::error!("GetTransactionResponse: {}", error);
-                return Err(AptosError::GetTransactionResponse)
-            },
-        };
-
-        return Ok(transaction);
+        return handle_response::<TransactionResponse>(response).await;
     }
 }

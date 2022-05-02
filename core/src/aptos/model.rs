@@ -23,3 +23,11 @@ pub struct TransactionResponse {
     pub type_transaction: String,
     pub hash: String,
 }
+
+// Aptos Error
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AptosErrorResponse {
+    pub code: i64,
+    pub message: String,
+}

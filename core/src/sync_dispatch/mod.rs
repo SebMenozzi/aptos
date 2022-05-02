@@ -1,4 +1,3 @@
-use log::info;
 use prost::Message;
 use std::sync::Arc;
 
@@ -7,13 +6,11 @@ use crate::core_proto::*;
 use crate::requests::*;
 use crate::rust_data::RustData;
 
-pub fn dispatch_request(core: *mut Core, request: Request) -> RustData {
+#[allow(unused_variables)] // TODO: remove this later
+pub fn dispatch_request(core: *const Core, request: Request) -> RustData {
     assert!(!core.is_null());
 
-    let core_ref = unsafe { core.as_ref().unwrap() };
-    let core_arc = Arc::new(core_ref);
-
-    info!(target: "rust", "Serving synchronous request on {:?}", std::thread::current());
+    let core_arc = unsafe { Arc::from_raw(core) };
 
     use crate::core_proto::request::SyncRequests::{SyncBacktrace, CreateAccount};
 
@@ -24,7 +21,7 @@ pub fn dispatch_request(core: *mut Core, request: Request) -> RustData {
                 CreateAccount(create_account_req) => handle_create_account(create_account_req).encode_to_vec(),
             }
         },
-        None => panic!("Invalid synchronous request"),
+        None => panic!("Unhandled synchronous request"),
     };
 
     return RustData::from(bytes);

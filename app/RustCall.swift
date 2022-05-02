@@ -77,7 +77,7 @@ private class SwiftCallback {
     }
 }
 
-func rustCallAsync<Response: SwiftProtobuf.Message>(
+func rustCallAsyncClosure<Response: SwiftProtobuf.Message>(
     _ core: OpaquePointer,
     _ request: CoreProto_Request,
     onMainThread: Bool = true,
@@ -116,4 +116,18 @@ func rustCallAsync<Response: SwiftProtobuf.Message>(
 
         rust_call_async(core, ptr, UInt(requestData.count), rustCallback)
     }
+}
+
+func rustCallAsyncAwait<Response: SwiftProtobuf.Message>(
+    _ core: OpaquePointer,
+    _ request: CoreProto_Request,
+    onMainThread: Bool = true
+) async throws -> Response {
+    return try await withCheckedThrowingContinuation({
+        (continuation: CheckedContinuation<Response, Error>) in
+        
+        rustCallAsyncClosure(core, request, onMainThread: onMainThread) { message in
+            continuation.resume(returning: message)
+        }
+    })
 }

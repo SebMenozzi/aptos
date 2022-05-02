@@ -30,22 +30,19 @@ impl AptosFaucetClient {
             .await {
                 Ok(res) => res,
                 Err(error) => {
-                    log::error!("MintAccountRequest: {}", error);
-                    return Err(AptosError::MintAccountRequest)
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
                 },
             };
 
-        let response_json = match response.json::<serde_json::Value>().await {
+        let response_json = match handle_response::<serde_json::Value>(response).await {
             Ok(res) => res,
-            Err(error) => {
-                log::error!("MintAccountResponse: {}", error);
-                return Err(AptosError::MintAccountResponse)
-            },
+            Err(error) => return Err(error)
         };
 
         let transaction_hashes: Vec<String> = match response_json.as_array() {
             Some(hashes) => hashes.iter().map(|i| i.to_string()).collect(),
-            None => return Err(AptosError::MintAccountResponse),
+            None => return Err(AptosError::InvalidResponse),
         };
 
         return Ok(transaction_hashes);

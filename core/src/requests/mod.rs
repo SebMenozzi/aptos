@@ -16,7 +16,7 @@ pub fn handle_create_account(_req: CreateAccountRequest) -> Box<CreateAccountRes
     return Box::new(response);
 }
 
-pub async fn handle_fund_account(core: Arc<&Core>, req: FundAccountRequest) -> Box<FundAccountResponse> {
+pub async fn handle_fund_account(core: Arc<Core>, req: FundAccountRequest) -> Box<FundAccountResponse> {
     let transactions = core.aptos_faucet_client.fund_account(&req.address, req.amount)
         .await
         .unwrap();
@@ -32,7 +32,7 @@ pub async fn handle_fund_account(core: Arc<&Core>, req: FundAccountRequest) -> B
     return Box::new(response);
 }
 
-pub async fn handle_get_account_balance(core: Arc<&Core>, req: GetAccountBalanceRequest) -> Box<GetAccountBalanceResponse> {
+pub async fn handle_get_account_balance(core: Arc<Core>, req: GetAccountBalanceRequest) -> Box<GetAccountBalanceResponse> {
     let balance = core.aptos_rest_client.get_account_resource(&req.address, "0x1::TestCoin::Balance")
         .await
         .unwrap()["data"]["coin"]["value"]
@@ -48,7 +48,7 @@ pub async fn handle_get_account_balance(core: Arc<&Core>, req: GetAccountBalance
     return Box::new(response);
 }
 
-pub async fn handle_transfer(core: Arc<&Core>, req: TransferRequest) -> Box<TransferResponse> {
+pub async fn handle_transfer(core: Arc<Core>, req: TransferRequest) -> Box<TransferResponse> {
     let payload = serde_json::json!({
         "type": "script_function_payload",
         "function": "0x1::TestCoin::transfer",
@@ -66,11 +66,9 @@ pub async fn handle_transfer(core: Arc<&Core>, req: TransferRequest) -> Box<Tran
         .await
         .unwrap();
 
-    let final_transaction = match core.aptos_rest_client.submit_transaction(&signed_transaction)
-        .await {
-            Ok(t) => t,
-            Err(err) => panic!("{:?}", err),
-        };
+    let final_transaction = core.aptos_rest_client.submit_transaction(&signed_transaction)
+        .await
+        .unwrap();
 
     let response = TransferResponse {
         transaction: Some(Transaction {
