@@ -5,6 +5,3 @@ protos:
 
 xcode:
 	open App.xcodeproj
-
-%:
-	@:

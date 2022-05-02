@@ -35,13 +35,6 @@ impl RustCallback {
     }
 }
 
-// Check that the callback has been deallocated
-impl Drop for RustCallback {
-    fn drop(&mut self) {
-        log::debug!(target: "rust", "{:?} at {:?} dropped!", self, &self as *const _);
-    }
-}
-
 unsafe impl Send for Core {}
 unsafe impl Sync for Core {}
 
