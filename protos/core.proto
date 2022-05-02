@@ -26,7 +26,7 @@ message Transaction {
 message CreateAccountRequest {}
 message CreateAccountResponse {
     string address = 1;
-    bytes signing_key = 2;
+    bytes keypair = 2;
 }
 
 // Asynchronous requests
@@ -49,7 +49,7 @@ message GetAccountBalanceResponse {
 message TransferRequest {
     string address_from = 1;
     string address_to = 2;
-    bytes signing_key = 3;
+    bytes keypair = 3;
     uint64 amount = 4;
 }
 message TransferResponse {

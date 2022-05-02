@@ -41,7 +41,7 @@ final class ViewController: UIViewController {
             print("💰 Bob balance: \(balance)")
         }
         
-        if let transaction = try? await transfer(core, amount: 1500, addressFrom: alice.address, addressTo: bob.address, signingKey: alice.signingKey) {
+        if let transaction = try? await transfer(core, amount: 1500, addressFrom: alice.address, addressTo: bob.address, keypair: alice.keypair) {
             print("📝 Transfer transaction: \(transaction.hash)")
         }
         
@@ -107,13 +107,13 @@ final class ViewController: UIViewController {
         amount: UInt64,
         addressFrom: String,
         addressTo: String,
-        signingKey: Data
+        keypair: Data
     ) async throws -> CoreProto_Transaction?  {
         let transferRequest = CoreProto_TransferRequest.with {
             $0.amount = amount
             $0.addressFrom = addressFrom
             $0.addressTo = addressTo
-            $0.signingKey = Data(signingKey)
+            $0.keypair = Data(keypair)
         }
         
         let req = CoreProto_Request.with {

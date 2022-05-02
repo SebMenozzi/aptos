@@ -9,7 +9,7 @@ pub fn handle_create_account(_req: CreateAccountRequest) -> Box<CreateAccountRes
 
     let response = CreateAccountResponse {
         address: account.address(),
-        signing_key: account.signing_key_bytes(),
+        keypair: account.keypair_bytes(),
         ..Default::default()
     };
 
@@ -60,7 +60,7 @@ pub async fn handle_transfer(core: Arc<Core>, req: TransferRequest) -> Box<Trans
         .await
         .unwrap();
 
-    let mut account_from = AptosAccount::new(Some(req.signing_key));
+    let mut account_from = AptosAccount::new(Some(req.keypair));
     
     let signed_transaction = core.aptos_rest_client.sign_transaction(&mut account_from, transaction)
         .await

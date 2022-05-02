@@ -41,7 +41,6 @@ func rustCall<Response: SwiftProtobuf.Message>(_ core: OpaquePointer, _ request:
     }
 }
 
-
 // MARK: - Async
 
 private class SwiftCallback {

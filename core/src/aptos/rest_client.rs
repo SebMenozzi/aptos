@@ -1,5 +1,3 @@
-use ed25519_dalek::{PublicKey, ExpandedSecretKey};
-use hex::ToHex;
 use core::time::Duration;
 
 use crate::aptos::*;
@@ -132,12 +130,8 @@ impl AptosRestClient {
             Err(error) => return Err(error),
         };
 
-        // TODO: Convert unwrap to error to gracefully display the issue here
         let to_sign = hex::decode(&signing_message.message[2..]).unwrap();
-
-        let signature: String = ExpandedSecretKey::from(&account_from.signing_key)
-            .sign(&to_sign, &PublicKey::from(&account_from.signing_key))
-            .encode_hex();
+        let signature: String = account_from.sign(&to_sign);
 
         let signature_payload: serde_json::Value = serde_json::json!({
             "type": "ed25519_signature",
