@@ -1,7 +1,6 @@
 use ed25519_dalek::{Keypair};
-use rand::SeedableRng;
+use rand::{SeedableRng, Rng, rngs::StdRng, rngs::OsRng};
 use tiny_keccak::{Sha3, Hasher};
-use rand::{Rng, rngs::StdRng, rngs::OsRng};
 use hex::ToHex;
 use ed25519_dalek::Signer;
 
