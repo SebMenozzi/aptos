@@ -26,9 +26,6 @@ Inside the core folder:
 # Install iOS targets for rust (if not already done)
 $ make init_ios
 
-# Install Cocoapods dependencies
-$ pod install
-
 # Generate the static library for iOS
 $ make ios
 ```
@@ -40,6 +37,9 @@ Inside the app folder:
 ```bash
 # Will generate swift protos via the protoc compiler
 $ make protos
+
+# Install Cocoapods dependencies
+$ pod install
 
 # Launch Xcode, for convenience
 $ make xcode
