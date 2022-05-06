@@ -4,15 +4,16 @@ package core_proto;
 
 message Request {
     oneof sync_requests {
-        BacktraceRequest sync_backtrace = 1;
+        GetBacktraceRequest get_sync_backtrace = 1;
         CreateAccountRequest create_account = 3;
     }
 
     oneof async_requests {
-        BacktraceRequest async_backtrace = 2;
+        GetBacktraceRequest get_async_backtrace = 2;
         FundAccountRequest fund_account = 4;
         GetAccountBalanceRequest get_account_balance = 6;
         TransferRequest transfer = 8;
+        GetAccountTransactionsRequest get_account_transactions = 10;
     }
 }
 
@@ -39,12 +40,16 @@ message FundAccountResponse {
     repeated Transaction transactions = 1;
 }
 
+/// Get account balance
+
 message GetAccountBalanceRequest {
     string address = 1;
 }
 message GetAccountBalanceResponse {
     uint64 balance = 1;
 }
+
+/// Transfer
 
 message TransferRequest {
     string address_from = 1;
@@ -56,7 +61,18 @@ message TransferResponse {
     Transaction transaction = 1;
 }
 
-message BacktraceRequest {}
-message BacktraceResponse {
+// Get account transactions
+
+message GetAccountTransactionsRequest {
+    string address = 1;
+}
+message GetAccountTransactionsResponse {
+    repeated Transaction transactions = 1;
+}
+
+// Get backtrace
+
+message GetBacktraceRequest {}
+message GetBacktraceResponse {
     string text = 1;
 }

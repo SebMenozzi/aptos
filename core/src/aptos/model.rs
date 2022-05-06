@@ -18,8 +18,9 @@ pub struct CreateTransactionSigningResponse {
 // Transaction
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct TransactionResponse {
+pub struct Transaction {
     #[serde(rename="type")]
     pub type_transaction: String,
     pub hash: String,
+    pub sequence_number: String,
 }

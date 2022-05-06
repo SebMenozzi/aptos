@@ -12,12 +12,12 @@ pub fn dispatch_request(core: *const Core, request: Request) -> RustData {
 
     let core_arc = unsafe { Arc::from_raw(core) };
 
-    use crate::core_proto::request::SyncRequests::{SyncBacktrace, CreateAccount};
+    use crate::core_proto::request::SyncRequests::{GetSyncBacktrace, CreateAccount};
 
     let bytes = match request.sync_requests {
         Some(req) => {
             match req {
-                SyncBacktrace(sync_backtrace_req) => handle_backtrace(sync_backtrace_req).encode_to_vec(),
+                GetSyncBacktrace(get_sync_backtrace_req) => handle_get_backtrace(get_sync_backtrace_req).encode_to_vec(),
                 CreateAccount(create_account_req) => handle_create_account(create_account_req).encode_to_vec(),
             }
         },

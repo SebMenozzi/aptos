@@ -66,10 +66,10 @@ impl AptosRestClient {
     /// Specs here https://fullnode.devnet.aptoslabs.com/spec.html#/schemas/Transaction
     pub async fn generate_transaction(
         &self,
-        sender: &str,
+        address: &str,
         payload: serde_json::Value,
     ) -> Result<serde_json::Value, AptosError> {
-        let account: GetAccountResponse = match self.get_account(sender).await {
+        let account: GetAccountResponse = match self.get_account(address).await {
             Ok(account) => account,
             Err(error) => return Err(error),
         };
@@ -94,7 +94,7 @@ impl AptosRestClient {
         let expiration_time_secs: u64 = expiration_time.as_secs() + 600;
 
         return Ok(serde_json::json!({
-            "sender": format!("0x{}", sender),
+            "sender": format!("0x{}", address),
             "sequence_number": sequence_number.to_string(),
             "max_gas_amount": "1000",
             "gas_unit_price": "1",
@@ -151,7 +151,7 @@ impl AptosRestClient {
     pub async fn submit_transaction(
         &self, 
         transaction: &serde_json::Value
-    ) -> Result<TransactionResponse, AptosError> {
+    ) -> Result<Transaction, AptosError> {
         let response = match self.http_client
             .post(format!("{}/transactions", self.url))
             .body(transaction.to_string())
@@ -165,14 +165,14 @@ impl AptosRestClient {
                 }
             };
 
-        return handle_response::<TransactionResponse>(response).await;
+        return handle_response::<Transaction>(response).await;
     }
 
     /// Retrieve a transaction in the blockchain.
     pub async fn get_transaction(
         &self, 
         transaction_hash: &str
-    ) -> Result<TransactionResponse, AptosError> {
+    ) -> Result<Transaction, AptosError> {
         let response = match self.http_client
             .get(format!("{}/transactions/{}", self.url, transaction_hash))
             .header(reqwest::header::CONTENT_TYPE, "application/json")
@@ -185,6 +185,41 @@ impl AptosRestClient {
                 },
             };
 
-        return handle_response::<TransactionResponse>(response).await;
+        return handle_response::<Transaction>(response).await;
+    }
+
+    /// Returns the sequence number and authentication key for an account
+    /// Specs here https://fullnode.devnet.aptoslabs.com/spec.html#/operations/get_account_transactions
+    pub async fn get_account_transactions(
+        &self, 
+        account_address: &str
+    ) -> Result<Vec<Transaction>, AptosError> {
+        let response = match self.http_client
+            .get(format!("{}/accounts/{}/transactions", self.url, account_address))
+            .header(reqwest::header::CONTENT_TYPE, "application/json")
+            .send()
+            .await {
+                Ok(res) => res,
+                Err(error) => {
+                    log::error!("{}", error);
+                    return Err(AptosError::InvalidRequest)
+                },
+            };
+
+        let response_json = match handle_response::<serde_json::Value>(response).await {
+            Ok(res) => res,
+            Err(error) => return Err(error)
+        };
+
+        let transactions: Vec<Transaction> = match response_json.as_array() {
+            Some(transactions) => transactions.iter().map(|t| Transaction{
+                type_transaction: t["type"].as_str().unwrap().to_string(),
+                hash: t["hash"].as_str().unwrap().to_string(),
+                sequence_number: t["sequence_number"].as_str().unwrap().to_string(),
+            }).collect(),
+            None => return Err(AptosError::InvalidResponse),
+        };
+
+        return Ok(transactions);
     }
 }

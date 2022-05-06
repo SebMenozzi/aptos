@@ -4,6 +4,17 @@ use crate::core::Core;
 use crate::core_proto::*;
 use crate::aptos::*;
 
+pub fn handle_get_backtrace(_req: GetBacktraceRequest) -> Box<GetBacktraceResponse> {
+    let bt = backtrace::Backtrace::new();
+
+    let response = GetBacktraceResponse {
+        text: format!("{:?}", bt),
+        ..Default::default()
+    };
+
+    return Box::new(response);
+}
+
 pub fn handle_create_account(_req: CreateAccountRequest) -> Box<CreateAccountResponse> {
     let account = AptosAccount::new(None);
 
@@ -81,11 +92,16 @@ pub async fn handle_transfer(core: Arc<Core>, req: TransferRequest) -> Box<Trans
     return Box::new(response);
 }
 
-pub fn handle_backtrace(_req: BacktraceRequest) -> Box<BacktraceResponse> {
-    let bt = backtrace::Backtrace::new();
+pub async fn handle_get_account_transactions(core: Arc<Core>, req: GetAccountTransactionsRequest)  -> Box<GetAccountTransactionsResponse> {
+    let transactions = core.aptos_rest_client.get_account_transactions(&req.address)
+        .await
+        .unwrap();
 
-    let response = BacktraceResponse {
-        text: format!("{:?}", bt),
+    let response = GetAccountTransactionsResponse {
+        transactions: transactions.iter().map(|t| Transaction {
+            type_transaction: t.type_transaction.clone(),
+            hash: t.hash.clone(),
+        }).collect(),
         ..Default::default()
     };
 

@@ -20,7 +20,7 @@ private func rustDataToData(_ rustData: RustData) -> (Data?, RustError?) {
 
 // MARK: - Sync
 
-func rustCall<Response: SwiftProtobuf.Message>(_ core: OpaquePointer, _ request: CoreProto_Request) throws -> Response {
+func rustCallSync<Response: SwiftProtobuf.Message>(_ core: OpaquePointer, _ request: CoreProto_Request) throws -> Response {
     // Request Proto Message to Request Swift Data
     let requestData = try! request.serializedData()
 

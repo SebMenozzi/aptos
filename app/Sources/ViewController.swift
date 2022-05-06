@@ -52,6 +52,20 @@ final class ViewController: UIViewController {
         if let balance = try? await getAccountBalance(core, address: bob.address) {
             print("💰 Bob balance: \(balance)")
         }
+        
+        if let transactions = try? await getAccountTransactions(core, address: alice.address) {
+            print("📝 Alice transactions:")
+            for t in transactions {
+                print("- \(t.hash)")
+            }
+        }
+        
+        if let transactions = try? await getAccountTransactions(core, address: bob.address) {
+            print("📝 Bob transactions:")
+            for t in transactions {
+                print("- \(t.hash)")
+            }
+        }
     }
     
     // MARK: - Private
@@ -61,7 +75,7 @@ final class ViewController: UIViewController {
             $0.createAccount = CoreProto_CreateAccountRequest()
         }
         
-        let response: CoreProto_CreateAccountResponse = try! rustCall(core, request)
+        let response: CoreProto_CreateAccountResponse = try! rustCallSync(core, request)
         
         return response
     }
@@ -102,6 +116,23 @@ final class ViewController: UIViewController {
         return res?.balance
     }
     
+    private func getAccountTransactions(
+        _ core: OpaquePointer,
+        address: String
+    ) async throws -> [CoreProto_Transaction]? {
+        let getAccountTransactionsRequest = CoreProto_GetAccountTransactionsRequest.with {
+            $0.address = address
+        }
+        
+        let req = CoreProto_Request.with {
+            $0.getAccountTransactions = getAccountTransactionsRequest
+        }
+        
+        let res: CoreProto_GetAccountTransactionsResponse? = try? await rustCallAsyncAwait(core, req)
+        
+        return res?.transactions
+    }
+    
     private func transfer(
         _ core: OpaquePointer,
         amount: UInt64,
@@ -127,18 +158,18 @@ final class ViewController: UIViewController {
 
     private func backtrace(_ core: OpaquePointer, sync: Bool, closure: @escaping (String) -> Void) {
         let req = CoreProto_Request.with {
-            if (sync) {
-                $0.syncBacktrace = CoreProto_BacktraceRequest()
+            if sync {
+                $0.getSyncBacktrace = CoreProto_GetBacktraceRequest()
             } else {
-                $0.asyncBacktrace = CoreProto_BacktraceRequest()
+                $0.getAsyncBacktrace = CoreProto_GetBacktraceRequest()
             }
         }
         
         if sync {
-            let res: CoreProto_BacktraceResponse = try! rustCall(core, req)
+            let res: CoreProto_GetBacktraceResponse = try! rustCallSync(core, req)
             closure(res.text)
         } else {
-            rustCallAsyncClosure(core, req) { (res: CoreProto_BacktraceResponse) in closure(res.text) }
+            rustCallAsyncClosure(core, req) { (res: CoreProto_GetBacktraceResponse) in closure(res.text) }
         }
     }
 }

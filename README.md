@@ -5,6 +5,9 @@ Aptos API spec => **https://fullnode.devnet.aptoslabs.com/spec.html**
 ## Dependencies
 
 ```bash
+# Install Cocoapods to manage swift dependencies
+$ brew install cocoapods
+
 # Install Rust (if not already done) => https://www.rust-lang.org/tools/install
 $ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
@@ -22,6 +25,9 @@ Inside the core folder:
 ```bash
 # Install iOS targets for rust (if not already done)
 $ make init_ios
+
+# Install Cocoapods dependencies
+$ pod install
 
 # Generate the static library for iOS
 $ make ios

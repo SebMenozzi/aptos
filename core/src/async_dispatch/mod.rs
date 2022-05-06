@@ -44,15 +44,16 @@ pub fn dispatch_request_async(core: *const Core, request: Request, callback: Rus
     let core_arc = unsafe { Arc::from_raw(core) };
 
     RUNTIME.spawn(async move {        
-        use crate::core_proto::request::AsyncRequests::{AsyncBacktrace, FundAccount, GetAccountBalance, Transfer};
+        use crate::core_proto::request::AsyncRequests::{GetAsyncBacktrace, FundAccount, GetAccountBalance, Transfer, GetAccountTransactions};
 
         let bytes = match request.async_requests {
             Some(req) => {
                 match req {
-                    AsyncBacktrace(async_backtrace_req) => async { handle_backtrace(async_backtrace_req) }.await.encode_to_vec(),
+                    GetAsyncBacktrace(get_async_backtrace_req) => async { handle_get_backtrace(get_async_backtrace_req) }.await.encode_to_vec(),
                     FundAccount(fund_account_req) => handle_fund_account(core_arc, fund_account_req).await.encode_to_vec(),
                     GetAccountBalance(get_account_balance_req) => handle_get_account_balance(core_arc, get_account_balance_req).await.encode_to_vec(),
                     Transfer(transfer_req) => handle_transfer(core_arc, transfer_req).await.encode_to_vec(),
+                    GetAccountTransactions(get_account_transactions_req) => handle_get_account_transactions(core_arc, get_account_transactions_req).await.encode_to_vec(),
                 }
             },
             None => return log::error!("Unhandled asynchronous request"),
