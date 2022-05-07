@@ -124,7 +124,7 @@ pub async fn handle_submit_wallet_transaction(core: Arc<Core>, req: SubmitWallet
 
     let mut bitmap = [0u8; BITMAP_NUM_OF_BYTES];
 
-    for i in 1..signatures.len() {
+    for i in 0..signatures.len() {
         bitmap_set_bit(&mut bitmap, i);
     }
 
@@ -135,8 +135,6 @@ pub async fn handle_submit_wallet_transaction(core: Arc<Core>, req: SubmitWallet
         "threshold": signatures.len(),
         "bitmap": format!("0x{}", hex::encode(bitmap)),
     });
-
-    log::info!("0x{}", hex::encode(bitmap));
 
     let transaction = core.aptos_rest_client.submit_transaction(req.transaction, signature_payload)
         .await
