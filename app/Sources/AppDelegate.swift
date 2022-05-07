@@ -11,8 +11,14 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
-        window?.rootViewController = ViewController()
-        
+        let profileProvider = LocalStorageProfileProvider()
+        let currentProfile = profileProvider.loadProfile()
+        if let currentProfile = currentProfile {
+            window?.rootViewController = ViewController()
+        } else {
+            window?.rootViewController = OnboardingViewController()
+        }
+    
         return true
     }
 }
