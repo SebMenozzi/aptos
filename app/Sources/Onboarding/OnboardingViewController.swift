@@ -233,10 +233,15 @@ extension OnboardingViewController {
 
 extension OnboardingViewController {
     @objc func createTeamButtonTapped(sender: UIButton) {
-        let createTeamVC = UIHostingController(rootView: CreateTeamComponent(createAccountTapped: { username in
+        let createTeamVC = UIHostingController(rootView: CreateTeamComponent(createTeamTapped: { username in
             let newAccount = createAccount(self.core) // retain cycle
+            let acc2 = createAccount(self.core) // retain cycle
+            let acc3 = createAccount(self.core) // retain cycle
+
+            let wallet1 = createWallet(self.core, publicKeys: [newAccount.publicKey, acc2.publicKey, acc3.publicKey])
+
             let accountProvider = LocalStorageProfileProvider()
-            accountProvider.storeProfile(newProfile: Profile(username: username, publicKey: newAccount.publicKey, privateKey: newAccount.publicKey, multisigAuthenticationKey: newAccount.publicKey))
+            accountProvider.storeProfile(newProfile: Profile(username: username, keyPairData: String(data: newAccount.keypair, encoding: .utf8) ?? "ERROR", sharedWalletAddress: wallet1.address))
         }))
         self.present(createTeamVC, animated: true, completion: nil)
     }

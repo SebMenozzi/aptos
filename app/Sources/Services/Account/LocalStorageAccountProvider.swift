@@ -52,6 +52,6 @@ struct LocalStorageProfileProvider {
     }
         
     func createDemoAccount() -> Profile {
-        return Profile(username: "username", publicKey: "0xpublickey", privateKey: "0xprivatekey", multisigAuthenticationKey: "0xhula")
+        return Profile(username: "username", keyPairData: "0x", sharedWalletAddress: "0x")
     }
 }

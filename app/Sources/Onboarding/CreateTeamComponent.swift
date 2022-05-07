@@ -9,18 +9,21 @@ import SwiftUI
 import UIKit
 
 struct CreateTeamComponent: View {
-    var createAccountTapped:(String) -> ()
+    var createTeamTapped:(String) -> ()
     
     @State private var needsCreateAccount = true
+    @State private var username = ""
 
     var body: some View {
         if needsCreateAccount {
-            CreateAccountView(createAccountTapped: { username in
+            CreateAccountView(createAccountTapped: { inputUsername in
                 needsCreateAccount = false
-                createAccountTapped(username)
+                username = inputUsername
             })
         } else {
-            CreateTeamView(createAccountTapped: createAccountTapped)
+            CreateTeamView(createTeamTapped: { _ in
+                createTeamTapped(username)
+            })
         }
     }
 }

@@ -9,7 +9,7 @@ import SwiftUI
 import UIKit
 
 struct CreateTeamView: View {
-    var createAccountTapped:(String) -> ()
+    var createTeamTapped:(String) -> ()
 
     @State private var teammateUsernames = [String]()
 
