@@ -1,6 +1,5 @@
 use ed25519_dalek::{Keypair};
 use rand::{SeedableRng, Rng, rngs::StdRng, rngs::OsRng};
-use tiny_keccak::{Sha3, Hasher};
 use hex::ToHex;
 use ed25519_dalek::Signer;
 
@@ -16,18 +15,6 @@ impl AptosAccount {
         };
 
         return Self { keypair };
-    }
-
-    /// Returns the address associated with the given account
-    pub fn address(&self) -> String {
-        let mut sha3 = Sha3::v256();
-        sha3.update(self.keypair.public.as_bytes());
-        sha3.update(&vec![0u8]);
-
-        let mut output = [0u8; 32];
-        sha3.finalize(&mut output);
-
-        return hex::encode(output);
     }
     
     /// Returns the public key hex encoded

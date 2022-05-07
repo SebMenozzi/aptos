@@ -20,48 +20,71 @@ final class ViewController: UIViewController {
     }
     
     func test() async {
-        let alice = createAccount(core)
-        let bob = createAccount(core)
-        print("🔗 Alice address: \(alice.address)")
-        print("🔗 Bob address: \(bob.address)")
+        let account1 = createAccount(core)
+        let account2 = createAccount(core)
+        let account3 = createAccount(core)
+        let account4 = createAccount(core)
         
-        if let transaction = try? await fundAccount(core, address: alice.address, amount: 20000) {
-            print("📝 Alice fund transaction: \(transaction.hash)")
+        let wallet1 = createWallet(core, publicKeys: [account1.publicKey, account2.publicKey])
+        let wallet2 = createWallet(core, publicKeys: [account3.publicKey, account4.publicKey])
+        
+        print("🔗 Wallet 1 address: \(wallet1.address)")
+        print("🔗 Wallet 2 address: \(wallet2.address)")
+        
+        if let transaction = try? await fundWallet(core, address: wallet1.address, amount: 20000) {
+            print("📝 Wallet 1 fund transaction: \(transaction.hash)")
         }
         
-        if let balance = try? await getAccountBalance(core, address: alice.address) {
-            print("💰 Alice balance: \(balance)")
+        if let transaction = try? await fundWallet(core, address: wallet2.address, amount: 10) {
+            print("📝 Wallet 2 fund transaction: \(transaction.hash)")
         }
         
-        if let transaction = try? await fundAccount(core, address: bob.address, amount: 10) {
-            print("📝 Bob fund transaction: \(transaction.hash)")
+        if let balance = try? await getWalletBalance(core, address: wallet1.address) {
+            print("💰 Wallet 1 balance: \(balance)")
         }
         
-        if let balance = try? await getAccountBalance(core, address: bob.address) {
-            print("💰 Bob balance: \(balance)")
+        if let balance = try? await getWalletBalance(core, address: wallet2.address) {
+            print("💰 Wallet 2 balance: \(balance)")
         }
         
-        if let transaction = try? await transfer(core, amount: 1500, addressFrom: alice.address, addressTo: bob.address, keypair: alice.keypair) {
-            print("📝 Transfer transaction: \(transaction.hash)")
+        guard let transaction = try? await createWalletTransaction(core, amount: 1500, addressFrom: wallet1.address, addressTo: wallet2.address) else { return }
+        print("📝 New transaction: \(transaction)")
+        
+        guard let signature_account1 = try? await signWalletTransaction(core, transaction: transaction, keypair: account1.keypair) else { return }
+        print("✅ Account 1 signed: \(signature_account1)")
+        
+        guard let signature_account2 = try? await signWalletTransaction(core, transaction: transaction, keypair: account2.keypair) else { return }
+        print("✅ Account 2 signed: \(signature_account2)")
+        
+        let signedPayloadAccount1 = CoreProto_SignedPayload.with {
+            $0.publicKey = account1.publicKey
+            $0.signature = signature_account1
+        }
+        let signedPayloadAccount2 = CoreProto_SignedPayload.with {
+            $0.publicKey = account2.publicKey
+            $0.signature = signature_account2
+        }
+        if let submitted_transaction = try? await submitWalletTransaction(core, transaction: transaction, signedPayloads: [signedPayloadAccount1, signedPayloadAccount2]) {
+            print("😎 Transaction submitted \(submitted_transaction.hash)")
         }
         
-        if let balance = try? await getAccountBalance(core, address: alice.address) {
-            print("💰 Alice balance: \(balance)")
+        if let balance = try? await getWalletBalance(core, address: wallet1.address) {
+            print("💰 Wallet 1 balance: \(balance)")
         }
         
-        if let balance = try? await getAccountBalance(core, address: bob.address) {
-            print("💰 Bob balance: \(balance)")
+        if let balance = try? await getWalletBalance(core, address: wallet2.address) {
+            print("💰 Wallet 2 balance: \(balance)")
         }
         
-        if let transactions = try? await getAccountTransactions(core, address: alice.address) {
-            print("📝 Alice transactions:")
+        if let transactions = try? await getWalletTransactions(core, address: wallet1.address) {
+            print("📝 Wallet 1 transactions:")
             for t in transactions {
                 print("- \(t.hash)")
             }
         }
         
-        if let transactions = try? await getAccountTransactions(core, address: bob.address) {
-            print("📝 Bob transactions:")
+        if let transactions = try? await getWalletTransactions(core, address: wallet2.address) {
+            print("📝 Wallet 2 transactions:")
             for t in transactions {
                 print("- \(t.hash)")
             }
@@ -79,82 +102,133 @@ final class ViewController: UIViewController {
         
         return response
     }
+    
+    private func createWallet(_ core: OpaquePointer, publicKeys: [String]) -> CoreProto_CreateWalletResponse {
+        let createWalletRequest = CoreProto_CreateWalletRequest()..{
+            $0.publicKeys = publicKeys
+        }
+        
+        let request = CoreProto_Request.with {
+            $0.createWallet = createWalletRequest
+        }
+        
+        let response: CoreProto_CreateWalletResponse = try! rustCallSync(core, request)
+        
+        return response
+    }
 
-    private func fundAccount(
+    private func fundWallet(
         _ core: OpaquePointer,
         address: String,
         amount: UInt64
     ) async throws -> CoreProto_Transaction? {
-        let fundAccountRequest = CoreProto_FundAccountRequest.with {
+        let fundWalletRequest = CoreProto_FundWalletRequest.with {
             $0.address = address
             $0.amount = amount
         }
         
         let req = CoreProto_Request.with {
-            $0.fundAccount = fundAccountRequest
+            $0.fundWallet = fundWalletRequest
         }
         
-        let res: CoreProto_FundAccountResponse? = try? await rustCallAsyncAwait(core, req)
+        let res: CoreProto_FundWalletResponse? = try? await rustCallAsyncAwait(core, req)
         
         return res?.transactions.first
     }
     
-    private func getAccountBalance(
+    private func getWalletBalance(
         _ core: OpaquePointer,
         address: String
     ) async throws -> UInt64? {
-        let getAccountBalanceRequest = CoreProto_GetAccountBalanceRequest.with {
+        let getWalletBalanceRequest = CoreProto_GetWalletBalanceRequest.with {
             $0.address = address
         }
         
         let req = CoreProto_Request.with {
-            $0.getAccountBalance = getAccountBalanceRequest
+            $0.getWalletBalance = getWalletBalanceRequest
         }
         
-        let res: CoreProto_GetAccountBalanceResponse? = try? await rustCallAsyncAwait(core, req)
+        let res: CoreProto_GetWalletBalanceResponse? = try? await rustCallAsyncAwait(core, req)
         
         return res?.balance
     }
     
-    private func getAccountTransactions(
+    private func getWalletTransactions(
         _ core: OpaquePointer,
         address: String
     ) async throws -> [CoreProto_Transaction]? {
-        let getAccountTransactionsRequest = CoreProto_GetAccountTransactionsRequest.with {
+        let getWalletTransactionsRequest = CoreProto_GetWalletTransactionsRequest.with {
             $0.address = address
         }
         
         let req = CoreProto_Request.with {
-            $0.getAccountTransactions = getAccountTransactionsRequest
+            $0.getWalletTransactions = getWalletTransactionsRequest
         }
         
-        let res: CoreProto_GetAccountTransactionsResponse? = try? await rustCallAsyncAwait(core, req)
+        let res: CoreProto_GetWalletTransactionsResponse? = try? await rustCallAsyncAwait(core, req)
         
         return res?.transactions
     }
     
-    private func transfer(
+    private func createWalletTransaction(
         _ core: OpaquePointer,
         amount: UInt64,
         addressFrom: String,
-        addressTo: String,
-        keypair: Data
-    ) async throws -> CoreProto_Transaction?  {
-        let transferRequest = CoreProto_TransferRequest.with {
+        addressTo: String
+    ) async throws -> String?  {
+        let createWalletTransactionRequest = CoreProto_CreateWalletTransactionRequest.with {
             $0.amount = amount
             $0.addressFrom = addressFrom
             $0.addressTo = addressTo
-            $0.keypair = Data(keypair)
         }
         
         let req = CoreProto_Request.with {
-            $0.transfer = transferRequest
+            $0.createWalletTransaction = createWalletTransactionRequest
         }
         
-        let res: CoreProto_TransferResponse? = try? await rustCallAsyncAwait(core, req)
+        let res: CoreProto_CreateWalletTransactionResponse? = try? await rustCallAsyncAwait(core, req)
         
         return res?.transaction
     }
+    
+    private func signWalletTransaction(
+        _ core: OpaquePointer,
+        transaction: String,
+        keypair: Data
+    ) async throws -> String?  {
+        let signWalletTransactionRequest = CoreProto_SignWalletTransactionRequest.with {
+            $0.transaction = transaction
+            $0.keypair = keypair
+        }
+        
+        let req = CoreProto_Request.with {
+            $0.signWalletTransaction = signWalletTransactionRequest
+        }
+        
+        let res: CoreProto_SignWalletTransactionResponse? = try? await rustCallAsyncAwait(core, req)
+        
+        return res?.signature
+    }
+    
+    private func submitWalletTransaction(
+        _ core: OpaquePointer,
+        transaction: String,
+        signedPayloads: [CoreProto_SignedPayload]
+    ) async throws -> CoreProto_Transaction?  {
+        let submitWalletTransactionRequest = CoreProto_SubmitWalletTransactionRequest.with {
+            $0.transaction = transaction
+            $0.signedPayloads = signedPayloads
+        }
+        
+        let req = CoreProto_Request.with {
+            $0.submitWalletTransaction = submitWalletTransactionRequest
+        }
+        
+        let res: CoreProto_SubmitWalletTransactionResponse? = try? await rustCallAsyncAwait(core, req)
+        
+        return res?.transaction
+    }
+
 
     private func backtrace(_ core: OpaquePointer, sync: Bool, closure: @escaping (String) -> Void) {
         let req = CoreProto_Request.with {

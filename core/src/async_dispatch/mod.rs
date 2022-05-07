@@ -44,16 +44,18 @@ pub fn dispatch_request_async(core: *const Core, request: Request, callback: Rus
     let core_arc = unsafe { Arc::from_raw(core) };
 
     RUNTIME.spawn(async move {        
-        use crate::core_proto::request::AsyncRequests::{GetAsyncBacktrace, FundAccount, GetAccountBalance, Transfer, GetAccountTransactions};
+        use crate::core_proto::request::AsyncRequests::{GetAsyncBacktrace, FundWallet, GetWalletBalance, CreateWalletTransaction, SignWalletTransaction, SubmitWalletTransaction, GetWalletTransactions};
 
         let bytes = match request.async_requests {
             Some(req) => {
                 match req {
                     GetAsyncBacktrace(get_async_backtrace_req) => async { handle_get_backtrace(get_async_backtrace_req) }.await.encode_to_vec(),
-                    FundAccount(fund_account_req) => handle_fund_account(core_arc, fund_account_req).await.encode_to_vec(),
-                    GetAccountBalance(get_account_balance_req) => handle_get_account_balance(core_arc, get_account_balance_req).await.encode_to_vec(),
-                    Transfer(transfer_req) => handle_transfer(core_arc, transfer_req).await.encode_to_vec(),
-                    GetAccountTransactions(get_account_transactions_req) => handle_get_account_transactions(core_arc, get_account_transactions_req).await.encode_to_vec(),
+                    FundWallet(fund_req) => handle_fund_wallet(core_arc, fund_req).await.encode_to_vec(),
+                    GetWalletBalance(get_balance_req) => handle_get_wallet_balance(core_arc, get_balance_req).await.encode_to_vec(),
+                    CreateWalletTransaction(create_transaction_req) => handle_create_wallet_transaction(core_arc, create_transaction_req).await.encode_to_vec(),
+                    SignWalletTransaction(sign_transaction_req) => handle_sign_wallet_transaction(core_arc, sign_transaction_req).await.encode_to_vec(),
+                    SubmitWalletTransaction(submit_transaction_req) => handle_submit_wallet_transaction(core_arc, submit_transaction_req).await.encode_to_vec(),
+                    GetWalletTransactions(get_wallet_transactions_req) => handle_get_wallet_transactions(core_arc, get_wallet_transactions_req).await.encode_to_vec(),
                 }
             },
             None => return log::error!("Unhandled asynchronous request"),

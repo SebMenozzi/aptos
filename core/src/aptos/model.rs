@@ -24,3 +24,11 @@ pub struct Transaction {
     pub hash: String,
     pub sequence_number: String,
 }
+
+// Sign transaction
+
+#[derive(Debug)]
+pub struct SignedPayload {
+    pub public_key: String,
+    pub signature: String,
+}

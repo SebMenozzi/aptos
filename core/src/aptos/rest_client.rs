@@ -68,7 +68,7 @@ impl AptosRestClient {
         &self,
         address: &str,
         payload: serde_json::Value,
-    ) -> Result<serde_json::Value, AptosError> {
+    ) -> Result<String, AptosError> {
         let account: GetAccountResponse = match self.get_account(address).await {
             Ok(account) => account,
             Err(error) => return Err(error),
@@ -101,7 +101,7 @@ impl AptosRestClient {
             "gas_currency_code": "XUS",
             "expiration_timestamp_secs": expiration_time_secs.to_string(),
             "payload": payload,
-        }));
+        }).to_string());
     }
     
     /// Converts a transaction produced by `generate_transaction` into a properly signed transaction,
@@ -110,11 +110,11 @@ impl AptosRestClient {
     pub async fn sign_transaction(
         &self,
         account_from: &mut AptosAccount,
-        mut transaction: serde_json::Value,
-    ) -> Result<serde_json::Value, AptosError> {
+        transaction: String,
+    ) -> Result<String, AptosError> {
         let response = match self.http_client
             .post(format!("{}/transactions/signing_message", self.url))
-            .body(transaction.to_string())
+            .body(transaction)
             .header(reqwest::header::CONTENT_TYPE, "application/json")
             .send()
             .await {
@@ -133,28 +133,25 @@ impl AptosRestClient {
         let to_sign = hex::decode(&signing_message.message[2..]).unwrap();
         let signature: String = account_from.sign(&to_sign);
 
-        let signature_payload: serde_json::Value = serde_json::json!({
-            "type": "ed25519_signature",
-            "public_key": format!("0x{}", account_from.public_key()),
-            "signature": format!("0x{}", signature),
-        });
-
-        transaction
-            .as_object_mut()
-            .unwrap()
-            .insert("signature".to_string(), signature_payload);
-
-        return Ok(transaction);
+        return Ok(format!("0x{}", signature));
     }
 
     /// Submits a signed transaction to the blockchain.
     pub async fn submit_transaction(
-        &self, 
-        transaction: &serde_json::Value
+        &self,
+        transaction: String,
+        signature_payload: serde_json::Value,
     ) -> Result<Transaction, AptosError> {
+        let mut transaction_json: serde_json::Value = serde_json::from_str(&transaction).unwrap();
+
+        transaction_json
+            .as_object_mut()
+            .unwrap()
+            .insert("signature".to_string(), signature_payload);
+
         let response = match self.http_client
             .post(format!("{}/transactions", self.url))
-            .body(transaction.to_string())
+            .body(transaction_json.to_string())
             .header(reqwest::header::CONTENT_TYPE, "application/json")
             .send()
             .await {

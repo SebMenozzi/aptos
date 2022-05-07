@@ -6,14 +6,17 @@ message Request {
     oneof sync_requests {
         GetBacktraceRequest get_sync_backtrace = 1;
         CreateAccountRequest create_account = 3;
+        CreateWalletRequest create_wallet = 5;
     }
 
     oneof async_requests {
         GetBacktraceRequest get_async_backtrace = 2;
-        FundAccountRequest fund_account = 4;
-        GetAccountBalanceRequest get_account_balance = 6;
-        TransferRequest transfer = 8;
-        GetAccountTransactionsRequest get_account_transactions = 10;
+        FundWalletRequest fund_wallet = 4;
+        GetWalletBalanceRequest get_wallet_balance = 6;
+        CreateWalletTransactionRequest create_wallet_transaction = 8;
+        SignWalletTransactionRequest sign_wallet_transaction = 10;
+        SubmitWalletTransactionRequest submit_wallet_transaction = 12;
+        GetWalletTransactionsRequest get_wallet_transactions = 14;
     }
 }
 
@@ -22,55 +25,88 @@ message Transaction {
     string hash = 2;
 }
 
+message SignedPayload {
+    string public_key = 1;
+    string signature = 2;
+}
+
 // Synchronous requests
 
 message CreateAccountRequest {}
 message CreateAccountResponse {
+    bytes keypair = 1;
+    string public_key = 2;
+}
+
+message CreateWalletRequest {
+    repeated string public_keys = 1;
+}
+message CreateWalletResponse {
     string address = 1;
-    bytes keypair = 2;
 }
 
 // Asynchronous requests
 
-message FundAccountRequest {
+message FundWalletRequest {
     string address = 1;
     uint64 amount = 2;
 }
-message FundAccountResponse {
+message FundWalletResponse {
     repeated Transaction transactions = 1;
 }
 
-/// Get account balance
+/// Get wallet balance
 
-message GetAccountBalanceRequest {
+message GetWalletBalanceRequest {
     string address = 1;
 }
-message GetAccountBalanceResponse {
+message GetWalletBalanceResponse {
     uint64 balance = 1;
 }
 
-/// Transfer
+/// Create wallet transaction
 
-message TransferRequest {
+message CreateWalletTransactionRequest {
     string address_from = 1;
     string address_to = 2;
-    bytes keypair = 3;
     uint64 amount = 4;
 }
-message TransferResponse {
+message CreateWalletTransactionResponse {
+    string transaction = 1;
+}
+
+/// Sign wallet transaction
+
+message SignWalletTransactionRequest {
+    bytes keypair = 1;
+    string transaction = 2;
+}
+
+message SignWalletTransactionResponse {
+    string signature = 1;
+}
+
+/// Submit wallet transaction
+
+message SubmitWalletTransactionRequest {
+    string transaction = 1;
+    repeated SignedPayload signed_payloads = 2;
+}
+
+message SubmitWalletTransactionResponse {
     Transaction transaction = 1;
 }
 
-// Get account transactions
+/// Get wallet transactions
 
-message GetAccountTransactionsRequest {
+message GetWalletTransactionsRequest {
     string address = 1;
 }
-message GetAccountTransactionsResponse {
+message GetWalletTransactionsResponse {
     repeated Transaction transactions = 1;
 }
 
-// Get backtrace
+/// Get backtrace
 
 message GetBacktraceRequest {}
 message GetBacktraceResponse {
