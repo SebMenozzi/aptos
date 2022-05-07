@@ -7,7 +7,6 @@ extension LogCategory {
 }
 
 final class WalletsViewController: UIViewController {
-    
     // MARK: - Spinner
     
     private let spinner = Spinner()

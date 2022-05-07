@@ -1,5 +1,6 @@
 import UIKit
 import FirebaseFirestore
+import SwiftUI
 
 extension LogCategory {
     static let username = LogCategory(rawValue: "username")
@@ -38,11 +39,29 @@ class UsernameViewController: BaseEditNameViewController {
             } else {
                 Logger.shared.info("Document added with ID: \(ref!.documentID)", category: .username)
                 
-                let vc = WalletsViewController()..{
+                let createTeamVC = UIHostingController(rootView: CreateWalletView(createWalletTapped: { publicKeys in
+                    let wallet = createWallet(Current.core(), publicKeys: publicKeys)
+                    
+                    var ref: DocumentReference? = nil
+                    ref = Current.firestore().collection(FirestoreDB.Collections.wallet).addDocument(data: [
+                        FirestoreDB.Wallet.address: wallet.address,
+                        FirestoreDB.Wallet.public_keys: publicKeys,
+                    ]) { [weak self] err in
+                        guard let self = self else { return }
+                        
+                        if let err = err {
+                            Logger.shared.error(err.localizedDescription, category: .wallets)
+                        } else {
+                            Logger.shared.info("Document added with ID: \(ref!.documentID)", category: .wallets)
+                        }
+                        
+                        self.dismiss(animated: true)
+                    }
+                }))..{
                     $0.modalTransitionStyle = .crossDissolve
                     $0.modalPresentationStyle = .fullScreen
                 }
-                self.present(vc, animated: true)
+                self.present(createTeamVC, animated: true)
             }
         }
     }
