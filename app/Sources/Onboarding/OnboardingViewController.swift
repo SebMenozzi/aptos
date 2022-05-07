@@ -223,10 +223,20 @@ public final class OnboardingViewController: UIViewController {
 
 
 extension OnboardingViewController {
+    private var core: OpaquePointer {
+        let aptosRestURL = "https://fullnode.devnet.aptoslabs.com"
+        let aptosFaucetURL = "https://faucet.devnet.aptoslabs.com"
+
+        return create_core("info", aptosRestURL, aptosFaucetURL)
+    }
+}
+
+extension OnboardingViewController {
     @objc func createTeamButtonTapped(sender: UIButton) {
         let createTeamVC = UIHostingController(rootView: CreateTeamComponent(createAccountTapped: { username in
-            let accountProvider = DefaultAccountProvider()
-            accountProvider.storeAccount(newAccount: accountProvider.createDemoAccount())
+            let newAccount = createAccount(self.core) // retain cycle
+            let accountProvider = LocalStorageProfileProvider()
+            accountProvider.storeProfile(newProfile: Profile(username: username, publicKey: newAccount.publicKey, privateKey: newAccount.publicKey, multisigAuthenticationKey: newAccount.publicKey))
         }))
         self.present(createTeamVC, animated: true, completion: nil)
     }

@@ -1,5 +1,5 @@
 //
-//  Account.swift
+//  Profile.swift
 //  App
 //
 //  Created by Anthony Humay on 5/6/22.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Account: Equatable, Encodable {
+struct Profile: Equatable, Encodable {
     let username: String
     let publicKey: String
     let privateKey: String
@@ -21,7 +21,7 @@ struct Account: Equatable, Encodable {
     }
 }
 
-extension Account: Decodable {
+extension Profile: Decodable {
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
