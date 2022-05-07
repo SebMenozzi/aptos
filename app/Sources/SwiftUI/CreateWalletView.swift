@@ -17,8 +17,8 @@ struct CreateWalletView: View {
                     .foregroundColor(.white)
                 Form {
                     ListEditor(
-                        title: "Friends",
-                        placeholderText: "Friend Public Key",
+                        title: "Add Keys",
+                        placeholderText: "Teammate Public Key",
                         addText: "Add Public Key",
                         list: $publicKeys
                     )
