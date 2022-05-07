@@ -2,7 +2,6 @@ import SwiftUI
 import UIKit
 
 struct CreateWalletView: View {
-    
     var createWalletTapped: ([String]) -> ()
 
     @State private var publicKeys = [String]()
@@ -11,7 +10,6 @@ struct CreateWalletView: View {
         ZStack {
             Color.black.ignoresSafeArea()
             VStack(alignment: .center) {
-                ModalViewIndicator()
                 Text("Create a wallet")
                     .font(.custom("Shapiro ExtraBold Wide", size: 28))
                     .foregroundColor(.white)
@@ -37,6 +35,7 @@ struct CreateWalletView: View {
                 Spacer()
             }
                 .multilineTextAlignment(.center)
+                .padding(.top, 20)
                 .padding(.leading, 10)
                 .padding(.trailing, 10)
         }
