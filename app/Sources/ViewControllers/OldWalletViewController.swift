@@ -3,7 +3,7 @@ import UIKit
 import FirebaseCore
 import FirebaseFirestore
 
-public final class WalletViewController: UIViewController {
+public final class OldWalletViewController: UIViewController {
     private var core: OpaquePointer {
         let aptosRestURL = "https://fullnode.devnet.aptoslabs.com"
         let aptosFaucetURL = "https://faucet.devnet.aptoslabs.com"
@@ -17,6 +17,8 @@ public final class WalletViewController: UIViewController {
         let settings = FirestoreSettings()
         Firestore.firestore().settings = settings
         db = Firestore.firestore()
+        
+        getWallets(userPublicKey: "test")
     }
 
     /** Pure Aptos Functions */
@@ -72,7 +74,8 @@ public final class WalletViewController: UIViewController {
             FirestoreDB.Transaction.signatures: [],
             FirestoreDB.Transaction.hash: transaction.hash,
             FirestoreDB.Transaction.walletIdFrom: from,
-            FirestoreDB.Transaction.walletIdTo: to
+            FirestoreDB.Transaction.walletIdTo: to,
+            FirestoreDB.Transaction.numRequiredSignatures: 1 // TODO
         ]) { err in
             if let err = err {
                 print("Error adding transaction document: \(err)")
@@ -105,6 +108,38 @@ public final class WalletViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    private func getWallets(userPublicKey: String) {
+        db.collection(FirestoreDB.Collections.wallet)
+            .whereField(FirestoreDB.Wallet.public_keys, arrayContains: userPublicKey)
+            .addSnapshotListener({ querySnapshot, err in
+                guard let snapshot = querySnapshot else {
+                    print("Error fetching wallets for public key \(userPublicKey)")
+                    return
+                }
+                
+                for document in snapshot.documents {
+                    print("Fetched wallet \(document.data())")
+                    
+                    self.getTransactions(walletAddress: document.data()["address"] as? String ?? "")
+                }
+            })
+    }
+    
+    private func getTransactions(walletAddress: String) {
+        db.collection(FirestoreDB.Collections.transaction)
+            .whereField(FirestoreDB.Transaction.walletIdFrom, isEqualTo: walletAddress)
+            .addSnapshotListener({ querySnapshot, err in
+            guard let snapshot = querySnapshot else {
+                print("Error fetching transactions for wallet address \(walletAddress)")
+                return
+            }
+            
+            for document in snapshot.documents {
+                print(document.data())
+            }
+        })
     }
 }
 

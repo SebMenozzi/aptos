@@ -23,7 +23,8 @@ enum FirestoreDB {
         public static let amount = "amount"
         public static let rawTransaction = "raw_transaction"
         public static let signatures = "signatures"
-        public static let walletIdTo = "wallet_id_to"
-        public static let walletIdFrom = "wallet_id_from"
+        public static let walletIdTo = "wallet_address_to"
+        public static let walletIdFrom = "wallet_address_from"
+        public static let numRequiredSignatures = "num_required_signatures"
     }
 }
