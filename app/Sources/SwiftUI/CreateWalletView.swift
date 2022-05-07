@@ -8,26 +8,38 @@ struct CreateWalletView: View {
     @State private var publicKeys = [String]()
 
     var body: some View {
-        VStack(alignment: .center) {
-            ModalViewIndicator()
-            Text("Create a wallet")
-                .font(.custom("Shapiro Bold", size: 22))
-            Form {
-                ListEditor(
-                    title: "Friends",
-                    placeholderText: "Public Key",
-                    addText: "Add Public Key",
-                    list: $publicKeys
-                )
+        ZStack {
+            Color.black.ignoresSafeArea()
+            VStack(alignment: .center) {
+                ModalViewIndicator()
+                Text("Create a wallet")
+                    .font(.custom("Shapiro ExtraBold Wide", size: 28))
+                    .foregroundColor(.white)
+                Form {
+                    ListEditor(
+                        title: "Friends",
+                        placeholderText: "Friend Public Key",
+                        addText: "Add Public Key",
+                        list: $publicKeys
+                    )
+                }
+                    .onAppear {
+                       UITableView.appearance().backgroundColor = .black
+                    }
+                    .foregroundColor(.white)
+                    .padding(.top, -20)
+
+                Button("CREATE A WALLET") {
+                    createWalletTapped(publicKeys)
+                }
+                    .buttonStyle(CustomButtonStyle())
+                    .foregroundColor(.white)
+                Spacer()
             }
-            Button("CREATE A WALLET") {
-                createWalletTapped(publicKeys)
-            }.buttonStyle(CustomButtonStyle())
-            Spacer()
+                .multilineTextAlignment(.center)
+                .padding(.leading, 10)
+                .padding(.trailing, 10)
         }
-        .multilineTextAlignment(.center)
-        .padding(.leading, 10)
-        .padding(.trailing, 10)
     }
 }
 
@@ -45,17 +57,17 @@ struct ListEditor: View {
     }
     
     var body: some View {
-        Section(header: Text(title)) {
+        Section(header: Text(title).font(.custom("Shapiro Semi", size: 18))) {
             ForEach(0..<list.count, id: \.self) { index in
                 ListItem(placeholder: "\(placeholderText) #\(index + 1)", text: getBinding(forIndex: index)) { self.list.remove(at: index) }
             }
             AddButton(text: addText) { self.list.append("") }
         }
+        .listRowBackground(Color.black)
     }
 }
 
 fileprivate struct ListItem: View {
-    
     var placeholder: String
     @Binding var text: String
     var removeAction: () -> Void
@@ -69,6 +81,7 @@ fileprivate struct ListItem: View {
             }
             TextField(placeholder, text: $text)
                 .multilineTextAlignment(.leading)
+                .font(.custom("Shapiro Medium", size: 18))
         }
     }
     

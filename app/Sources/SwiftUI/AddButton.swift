@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AddButton: View {
-    
     var text: String
     var addAction: () -> Void
     
@@ -12,6 +11,7 @@ struct AddButton: View {
                     .foregroundColor(.green)
                     .padding(.horizontal)
                 Text(text)
+                    .font(.custom("Shapiro Medium", size: 18))
             }
         }
     }
