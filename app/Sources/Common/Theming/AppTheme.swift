@@ -15,7 +15,7 @@ extension AppTheme {
     static let dark = AppTheme(
         statusBarStyle: .lightContent,
         textColor: .white,
-        primaryColor: Color.primary,
+        primaryColor: DefaultColor.primary,
         backgroundColor: .black,
         keyboardStyle: .dark
     )

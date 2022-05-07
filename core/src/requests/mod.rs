@@ -21,7 +21,7 @@ pub fn handle_create_account(_req: CreateAccountRequest) -> Box<CreateAccountRes
     let account = AptosAccount::new(None);
 
     let response = CreateAccountResponse {
-        keypair: account.keypair_bytes(),
+        keypair: account.keypair(),
         public_key: account.public_key(),
         ..Default::default()
     };

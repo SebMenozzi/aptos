@@ -84,6 +84,9 @@ open class BouncingButton: UIButton {
         }
 
         backToIdleAnimator.startAnimation()
+        
+        let haptic = HapticFeedbackBuilder(.medium).build()
+        SoundPlayer.shared.play(haptic: haptic)
     }
 }
 

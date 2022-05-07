@@ -34,7 +34,7 @@ message SignedPayload {
 
 message CreateAccountRequest {}
 message CreateAccountResponse {
-    bytes keypair = 1;
+    string keypair = 1;
     string public_key = 2;
 }
 
@@ -78,7 +78,7 @@ message CreateWalletTransactionResponse {
 /// Sign wallet transaction
 
 message SignWalletTransactionRequest {
-    bytes keypair = 1;
+    string keypair = 1;
     string transaction = 2;
 }
 

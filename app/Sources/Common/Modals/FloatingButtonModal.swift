@@ -23,9 +23,6 @@ final class FloatingButtonModal {
     }
 
     @objc func buttonTapped(sender: UIButton) {
-        let haptic = HapticFeedbackBuilder(.medium).build()
-        SoundPlayer.shared.play(haptic: haptic)
-
         delegate?.onPress()
     }
 

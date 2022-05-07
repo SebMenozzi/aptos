@@ -36,7 +36,7 @@ final class Switch: UIControl {
     private lazy var backgroundView = RoundedCornersView(backgroundColor: .clear)
 
     public required override init(frame: CGRect = .zero) {
-        self.toggleView = ToggleView(backgroundColor: Color.green)..{
+        self.toggleView = ToggleView(backgroundColor: DefaultColor.green)..{
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
 

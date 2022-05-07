@@ -2,6 +2,7 @@ import UIKit
 import SwiftUI
 
 public final class OnboardingViewController: UIViewController {
+    
     private func addShadowLayer(view: UIView) {
         view.layer.backgroundColor = UIColor.clear.cgColor
         view.layer.shadowColor = UIColor.white.cgColor
@@ -73,26 +74,15 @@ public final class OnboardingViewController: UIViewController {
 
     // login button
 
-    private lazy var createWalletButton = RegularButton()..{
-        $0.with(backgroundColor: Color.primary)
+    private lazy var createAccountButton = RegularButton()..{
+        $0.with(backgroundColor: DefaultColor.primary)
         $0.with(textColor: .white)
-        $0.with(title: "CREATE TEAM")
+        $0.with(title: "CREATE ACCOUNT")
         $0.with(font: .button)
         $0.with(cornerRadius: 25)
         $0.isEnabled = false
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(createTeamButtonTapped(sender:)), for: .touchUpInside)
-    }
-    
-    private lazy var joinWalletButton = RegularButton()..{
-        $0.with(backgroundColor: .yellow)
-        $0.with(title: "JOIN TEAM")
-        $0.with(textColor: .black)
-        $0.with(font: .button)
-        $0.with(cornerRadius: 25)
-        $0.isEnabled = false
-        $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(joinTeamButtonTapped(sender:)), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(createAccount(sender:)), for: .touchUpInside)
     }
 
     private lazy var switchTermsControl = Switch()..{
@@ -101,7 +91,7 @@ public final class OnboardingViewController: UIViewController {
         $0.delegate = self
     }
     
-    // Background gradient
+    // MARK: - Background gradient
 
     private let meshGradientViewController = MeshGradientViewController()
 
@@ -109,7 +99,7 @@ public final class OnboardingViewController: UIViewController {
         return .init(
             backgroundColor: .black,
             foregroundColors: [
-                Color.primary.withAlphaComponent(0.2)
+                DefaultColor.primary.withAlphaComponent(0.2)
             ]
         )
     }
@@ -159,15 +149,13 @@ public final class OnboardingViewController: UIViewController {
         containerView.addSubview(termsButtonLabel)
         containerView.addSubview(switchTermsControl)
 
-        containerView.addSubview(createWalletButton)
-        containerView.addSubview(joinWalletButton)
+        containerView.addSubview(createAccountButton)
 
         setupLogoLabel()
 
         setupcontainerView()
         
-        setupPhoneNumberButton()
-        setupSnapButton()
+        setupCreateAccountButton()
         setupTitleTextView()
 
         setupTermsButton()
@@ -182,8 +170,8 @@ public final class OnboardingViewController: UIViewController {
     private func setupcontainerView() {
         containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         containerView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -30).isActive = true
-        containerView.heightAnchor.constraint(equalToConstant: 260).isActive = true
-        containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -40).isActive = true
+        containerView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        containerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
 
     private func setupTitleTextView() {
@@ -204,16 +192,10 @@ public final class OnboardingViewController: UIViewController {
         switchTermsControl.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20).isActive = true
     }
 
-    private func setupPhoneNumberButton() {
-        createWalletButton.topAnchor.constraint(equalTo: termsLabel.bottomAnchor, constant: 15).isActive = true
-        createWalletButton.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        createWalletButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
-    private func setupSnapButton() {
-        joinWalletButton.topAnchor.constraint(equalTo: createWalletButton.bottomAnchor, constant: 15).isActive = true
-        joinWalletButton.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
-        joinWalletButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+    private func setupCreateAccountButton() {
+        createAccountButton.topAnchor.constraint(equalTo: termsLabel.bottomAnchor, constant: 15).isActive = true
+        createAccountButton.widthAnchor.constraint(equalTo: containerView.widthAnchor).isActive = true
+        createAccountButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -221,42 +203,20 @@ public final class OnboardingViewController: UIViewController {
     }
 }
 
-
 extension OnboardingViewController {
-    private var core: OpaquePointer {
-        let aptosRestURL = "https://fullnode.devnet.aptoslabs.com"
-        let aptosFaucetURL = "https://faucet.devnet.aptoslabs.com"
-
-        return create_core("info", aptosRestURL, aptosFaucetURL)
-    }
-}
-
-extension OnboardingViewController {
-    @objc func createTeamButtonTapped(sender: UIButton) {
-        let createTeamVC = UIHostingController(rootView: CreateTeamComponent(createTeamTapped: { username in
-            let newAccount = createAccount(self.core) // retain cycle
-            let acc2 = createAccount(self.core) // retain cycle
-            let acc3 = createAccount(self.core) // retain cycle
-
-            let wallet1 = createWallet(self.core, publicKeys: [newAccount.publicKey, acc2.publicKey, acc3.publicKey])
-
-            let accountProvider = LocalStorageProfileProvider()
-            accountProvider.storeProfile(newProfile: Profile(username: username, keyPairData: String(data: newAccount.keypair, encoding: .utf8) ?? "ERROR", sharedWalletAddress: wallet1.address))
-        }))
-        self.present(createTeamVC, animated: true, completion: nil)
-    }
     
-    @objc func joinTeamButtonTapped(sender: UIButton) {
-        let joinTeamVC = UIHostingController(rootView: JoinTeamComponent(createAccountTapped: { username in
-        }))
-        self.present(joinTeamVC, animated: true, completion: nil)
+    @objc func createAccount(sender: UIButton) {
+        let vc = UsernameViewController()..{
+            $0.modalTransitionStyle = .crossDissolve
+            $0.modalPresentationStyle = .fullScreen
+        }
+        present(vc, animated: true)
     }
 }
 
 extension OnboardingViewController: SwitchDelegate {
     
     func didUpdateValue(isOn: Bool) {
-        createWalletButton.isEnabled = isOn
-        joinWalletButton.isEnabled = isOn
+        createAccountButton.isEnabled = isOn
     }
 }

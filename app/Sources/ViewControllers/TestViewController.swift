@@ -1,6 +1,6 @@
 import UIKit
 
-final class ViewController: UIViewController {
+final class TestViewController: UIViewController {
     
     private var core: OpaquePointer {
         let aptosRestURL = "https://fullnode.devnet.aptoslabs.com"
@@ -31,29 +31,29 @@ final class ViewController: UIViewController {
         print("🔗 Wallet 1 address: \(wallet1.address)")
         print("🔗 Wallet 2 address: \(wallet2.address)")
         
-        if let transaction = try? await fundWallet(core, address: wallet1.address, amount: 20000) {
+        if let transaction = try? await fundWalletAsync(core, address: wallet1.address, amount: 20000) {
             print("📝 Wallet 1 fund transaction: \(transaction.hash)")
         }
         
-        if let transaction = try? await fundWallet(core, address: wallet2.address, amount: 10) {
+        if let transaction = try? await fundWalletAsync(core, address: wallet2.address, amount: 10) {
             print("📝 Wallet 2 fund transaction: \(transaction.hash)")
         }
         
-        if let balance = try? await getWalletBalance(core, address: wallet1.address) {
+        if let balance = try? await getWalletBalanceAsync(core, address: wallet1.address) {
             print("💰 Wallet 1 balance: \(balance)")
         }
         
-        if let balance = try? await getWalletBalance(core, address: wallet2.address) {
+        if let balance = try? await getWalletBalanceAsync(core, address: wallet2.address) {
             print("💰 Wallet 2 balance: \(balance)")
         }
         
-        guard let transaction = try? await createWalletTransaction(core, amount: 1500, addressFrom: wallet1.address, addressTo: wallet2.address) else { return }
+        guard let transaction = try? await createWalletTransactionAsync(core, amount: 1500, addressFrom: wallet1.address, addressTo: wallet2.address) else { return }
         print("📝 New transaction: \(transaction)")
         
-        guard let signature_account1 = try? await signWalletTransaction(core, transaction: transaction, keypair: account1.keypair) else { return }
+        guard let signature_account1 = try? await signWalletTransactionAsync(core, transaction: transaction, keypair: account1.keypair) else { return }
         print("✅ Account 1 signed: \(signature_account1)")
         
-        guard let signature_account2 = try? await signWalletTransaction(core, transaction: transaction, keypair: account2.keypair) else { return }
+        guard let signature_account2 = try? await signWalletTransactionAsync(core, transaction: transaction, keypair: account2.keypair) else { return }
         print("✅ Account 2 signed: \(signature_account2)")
         
         let signedPayloadAccount1 = CoreProto_SignedPayload.with {
@@ -64,26 +64,26 @@ final class ViewController: UIViewController {
             $0.publicKey = account2.publicKey
             $0.signature = signature_account2
         }
-        if let submitted_transaction = try? await submitWalletTransaction(core, transaction: transaction, signedPayloads: [signedPayloadAccount1, signedPayloadAccount2]) {
+        if let submitted_transaction = try? await submitWalletTransactionAsync(core, transaction: transaction, signedPayloads: [signedPayloadAccount1, signedPayloadAccount2]) {
             print("😎 Transaction submitted \(submitted_transaction.hash)")
         }
         
-        if let balance = try? await getWalletBalance(core, address: wallet1.address) {
+        if let balance = try? await getWalletBalanceAsync(core, address: wallet1.address) {
             print("💰 Wallet 1 balance: \(balance)")
         }
         
-        if let balance = try? await getWalletBalance(core, address: wallet2.address) {
+        if let balance = try? await getWalletBalanceAsync(core, address: wallet2.address) {
             print("💰 Wallet 2 balance: \(balance)")
         }
         
-        if let transactions = try? await getWalletTransactions(core, address: wallet1.address) {
+        if let transactions = try? await getWalletTransactionsAsync(core, address: wallet1.address) {
             print("📝 Wallet 1 transactions:")
             for t in transactions {
                 print("- \(t.hash)")
             }
         }
         
-        if let transactions = try? await getWalletTransactions(core, address: wallet2.address) {
+        if let transactions = try? await getWalletTransactionsAsync(core, address: wallet2.address) {
             print("📝 Wallet 2 transactions:")
             for t in transactions {
                 print("- \(t.hash)")

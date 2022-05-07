@@ -34,7 +34,7 @@ class BaseEditViewController: UIViewController {
         floatingButtonModal = FloatingButtonModal()
         floatingButtonModal?.delegate = self
         floatingButtonModal?.parentView = view
-        //floatingButtonModal?.show(icon: R.image.next(), iconSize: 24, color: Color.primary)
+        floatingButtonModal?.show(icon: R.image.next(), iconSize: 24, color: DefaultColor.primary)
     }
 
     private func setupKeyboardObserver() {
@@ -96,7 +96,7 @@ class BaseEditViewController: UIViewController {
 
     func setDefaultBackground() {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
-            self.view.backgroundColor = Color.primary
+            self.view.backgroundColor = DefaultColor.primary
         })
     }
 

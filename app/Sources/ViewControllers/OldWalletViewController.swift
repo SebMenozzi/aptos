@@ -44,7 +44,7 @@ public final class WalletViewController: UIViewController {
     private func signWalletTransaction(
         _ core: OpaquePointer,
         transaction: String,
-        keypair: Data
+        keypair: String
     ) async throws -> String?  {
         let signWalletTransactionRequest = CoreProto_SignWalletTransactionRequest.with {
             $0.transaction = transaction
@@ -66,11 +66,11 @@ public final class WalletViewController: UIViewController {
         print("📝 New transaction: \(transaction)")
         
         var ref: DocumentReference? = nil
-        ref = db.collection(FirestoreDB.Collections.transactions).addDocument(data: [
+        ref = db.collection(FirestoreDB.Collections.transaction).addDocument(data: [
             FirestoreDB.Transaction.amount: amount,
             FirestoreDB.Transaction.rawTransaction: transaction,
             FirestoreDB.Transaction.signatures: [],
-            FirestoreDB.Transaction.transactionHash: transaction.hash,
+            FirestoreDB.Transaction.hash: transaction.hash,
             FirestoreDB.Transaction.walletIdFrom: from,
             FirestoreDB.Transaction.walletIdTo: to
         ]) { err in
@@ -82,12 +82,12 @@ public final class WalletViewController: UIViewController {
         }
     }
 
-    private func signTransaction(transaction: String, keypair: Data) async {
+    private func signTransaction(transaction: String, keypair: String) async {
         guard let signature = try? await signWalletTransaction(core, transaction: transaction, keypair: keypair) else { return }
         print("✅ Transaction signed: \(signature)")
         
-        db.collection(FirestoreDB.Collections.transactions)
-            .whereField(FirestoreDB.Transaction.transactionHash, isEqualTo: transaction.hash)
+        db.collection(FirestoreDB.Collections.transaction)
+            .whereField(FirestoreDB.Transaction.hash, isEqualTo: transaction.hash)
             .getDocuments() { (querySnapshot, err) in
             if let err = err {
                 print("Error getting transactions from Firestore to sign: \(err)")

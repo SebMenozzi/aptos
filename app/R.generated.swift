@@ -89,15 +89,10 @@ struct R: Rswift.Validatable {
     try intern.validate()
   }
 
-  /// This `R.entitlements` struct is generated, and contains static references to 1 properties.
-  struct entitlements {
-    static let apsEnvironment = infoPlistString(path: [], key: "aps-environment") ?? "development"
-
-    fileprivate init() {}
-  }
-
-  /// This `R.file` struct is generated, and contains static references to 6 files.
+  /// This `R.file` struct is generated, and contains static references to 7 files.
   struct file {
+    /// Resource file `GoogleService-Info.plist`.
+    static let googleServiceInfoPlist = Rswift.FileResource(bundle: R.hostingBundle, name: "GoogleService-Info", pathExtension: "plist")
     /// Resource file `Shapiro Bold Wide.ttf`.
     static let shapiroBoldWideTtf = Rswift.FileResource(bundle: R.hostingBundle, name: "Shapiro Bold Wide", pathExtension: "ttf")
     /// Resource file `Shapiro Bold.ttf`.
@@ -110,6 +105,12 @@ struct R: Rswift.Validatable {
     static let shapiroSemiWideTtf = Rswift.FileResource(bundle: R.hostingBundle, name: "Shapiro Semi Wide", pathExtension: "ttf")
     /// Resource file `Shapiro Semi.ttf`.
     static let shapiroSemiTtf = Rswift.FileResource(bundle: R.hostingBundle, name: "Shapiro Semi", pathExtension: "ttf")
+
+    /// `bundle.url(forResource: "GoogleService-Info", withExtension: "plist")`
+    static func googleServiceInfoPlist(_: Void = ()) -> Foundation.URL? {
+      let fileResource = R.file.googleServiceInfoPlist
+      return fileResource.bundle.url(forResource: fileResource)
+    }
 
     /// `bundle.url(forResource: "Shapiro Bold Wide", withExtension: "ttf")`
     static func shapiroBoldWideTtf(_: Void = ()) -> Foundation.URL? {
@@ -203,6 +204,30 @@ struct R: Rswift.Validatable {
       if R.font.shapiroSemi(size: 42) == nil { throw Rswift.ValidationError(description:"[R.swift] Font 'Shapiro-Semi' could not be loaded, is 'Shapiro Semi.ttf' added to the UIAppFonts array in this targets Info.plist?") }
       if R.font.shapiroSemiWide(size: 42) == nil { throw Rswift.ValidationError(description:"[R.swift] Font 'Shapiro-SemiWide' could not be loaded, is 'Shapiro Semi Wide.ttf' added to the UIAppFonts array in this targets Info.plist?") }
     }
+
+    fileprivate init() {}
+  }
+
+  /// This `R.image` struct is generated, and contains static references to 2 images.
+  struct image {
+    /// Image `next`.
+    static let next = Rswift.ImageResource(bundle: R.hostingBundle, name: "next")
+    /// Image `plus`.
+    static let plus = Rswift.ImageResource(bundle: R.hostingBundle, name: "plus")
+
+    #if os(iOS) || os(tvOS)
+    /// `UIImage(named: "next", bundle: ..., traitCollection: ...)`
+    static func next(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIImage? {
+      return UIKit.UIImage(resource: R.image.next, compatibleWith: traitCollection)
+    }
+    #endif
+
+    #if os(iOS) || os(tvOS)
+    /// `UIImage(named: "plus", bundle: ..., traitCollection: ...)`
+    static func plus(compatibleWith traitCollection: UIKit.UITraitCollection? = nil) -> UIKit.UIImage? {
+      return UIKit.UIImage(resource: R.image.plus, compatibleWith: traitCollection)
+    }
+    #endif
 
     fileprivate init() {}
   }
