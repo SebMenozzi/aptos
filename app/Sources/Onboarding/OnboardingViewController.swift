@@ -1,7 +1,7 @@
 import UIKit
+import SwiftUI
 
 public final class OnboardingViewController: UIViewController {
-    
     private func addShadowLayer(view: UIView) {
         view.layer.backgroundColor = UIColor.clear.cgColor
         view.layer.shadowColor = UIColor.white.cgColor
@@ -76,23 +76,23 @@ public final class OnboardingViewController: UIViewController {
     private lazy var createWalletButton = RegularButton()..{
         $0.with(backgroundColor: Color.primary)
         $0.with(textColor: .white)
-        $0.with(title: "CREATE A WALLET")
+        $0.with(title: "CREATE TEAM")
         $0.with(font: .button)
         $0.with(cornerRadius: 25)
         $0.isEnabled = false
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(buttonTapped(sender:)), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(createTeamButtonTapped(sender:)), for: .touchUpInside)
     }
     
     private lazy var joinWalletButton = RegularButton()..{
         $0.with(backgroundColor: .yellow)
-        $0.with(title: "JOIN A WALLET")
+        $0.with(title: "JOIN TEAM")
         $0.with(textColor: .black)
         $0.with(font: .button)
         $0.with(cornerRadius: 25)
         $0.isEnabled = false
         $0.translatesAutoresizingMaskIntoConstraints = false
-        $0.addTarget(self, action: #selector(buttonTapped(sender:)), for: .touchUpInside)
+        $0.addTarget(self, action: #selector(joinTeamButtonTapped(sender:)), for: .touchUpInside)
     }
 
     private lazy var switchTermsControl = Switch()..{
@@ -221,10 +221,20 @@ public final class OnboardingViewController: UIViewController {
     }
 }
 
+
 extension OnboardingViewController {
+    @objc func createTeamButtonTapped(sender: UIButton) {
+        let createTeamVC = UIHostingController(rootView: CreateTeamComponent(createAccountTapped: { username in
+            let accountProvider = DefaultAccountProvider()
+            accountProvider.storeAccount(newAccount: accountProvider.createDemoAccount())
+        }))
+        self.present(createTeamVC, animated: true, completion: nil)
+    }
     
-    @objc func buttonTapped(sender: UIButton) {
-        
+    @objc func joinTeamButtonTapped(sender: UIButton) {
+        let joinTeamVC = UIHostingController(rootView: JoinTeamComponent(createAccountTapped: { username in
+        }))
+        self.present(joinTeamVC, animated: true, completion: nil)
     }
 }
 
