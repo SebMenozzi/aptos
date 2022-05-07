@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		33F489AD282618F600C9385B /* CreateTeamComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489AC282618F600C9385B /* CreateTeamComponent.swift */; };
+		33F489AF28261D5E00C9385B /* CreateTeamView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489AE28261D5E00C9385B /* CreateTeamView.swift */; };
+		33F489B128261E2700C9385B /* JoinTeamComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489B028261E2700C9385B /* JoinTeamComponent.swift */; };
+		33F489B328261F3100C9385B /* CreateAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489B228261F3100C9385B /* CreateAccountView.swift */; };
+		33F489B7282622E000C9385B /* DefaultFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489B6282622E000C9385B /* DefaultFileManager.swift */; };
+		33F489BB2826234800C9385B /* LocalStorageAccountProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489BA2826234800C9385B /* LocalStorageAccountProvider.swift */; };
+		33F489BE2826237E00C9385B /* SystemConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489BD2826237E00C9385B /* SystemConfiguration.swift */; };
+		33F489C12826248A00C9385B /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489C02826248A00C9385B /* Account.swift */; };
+		33F489C628262EDD00C9385B /* Aptos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F489C528262EDD00C9385B /* Aptos.swift */; };
 		680357B21B9EE9052B60D835 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B44D34E63D9AF815E1FCF8FE /* Pods_App.framework */; };
 		D11159D72809382F006CC3B8 /* libcore-ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D174B4D62804E6E20069313B /* libcore-ios.a */; };
 		D11159D92809393F006CC3B8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D11159D82809393F006CC3B8 /* ViewController.swift */; };
@@ -70,6 +79,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		33F489AC282618F600C9385B /* CreateTeamComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTeamComponent.swift; sourceTree = "<group>"; };
+		33F489AE28261D5E00C9385B /* CreateTeamView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateTeamView.swift; sourceTree = "<group>"; };
+		33F489B028261E2700C9385B /* JoinTeamComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinTeamComponent.swift; sourceTree = "<group>"; };
+		33F489B228261F3100C9385B /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
+		33F489B6282622E000C9385B /* DefaultFileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultFileManager.swift; sourceTree = "<group>"; };
+		33F489BA2826234800C9385B /* LocalStorageAccountProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalStorageAccountProvider.swift; sourceTree = "<group>"; };
+		33F489BD2826237E00C9385B /* SystemConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemConfiguration.swift; sourceTree = "<group>"; };
+		33F489C02826248A00C9385B /* Account.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Account.swift; sourceTree = "<group>"; };
+		33F489C528262EDD00C9385B /* Aptos.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Aptos.swift; sourceTree = "<group>"; };
 		B4390377268301EF007ED1C9 /* RustCall.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RustCall.swift; sourceTree = "<group>"; };
 		B44D34E63D9AF815E1FCF8FE /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA6060341130B8B216B3AAC9 /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
@@ -152,6 +170,74 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		33F489AB282618D400C9385B /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				D178AE502825A1A2008E5DE1 /* OnboardingViewController.swift */,
+				33F489AC282618F600C9385B /* CreateTeamComponent.swift */,
+				33F489AE28261D5E00C9385B /* CreateTeamView.swift */,
+				33F489B028261E2700C9385B /* JoinTeamComponent.swift */,
+				33F489B228261F3100C9385B /* CreateAccountView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		33F489B4282622BA00C9385B /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				33F489B5282622C300C9385B /* Storage */,
+			);
+			path = Libraries;
+			sourceTree = "<group>";
+		};
+		33F489B5282622C300C9385B /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				33F489B6282622E000C9385B /* DefaultFileManager.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		33F489B82826232D00C9385B /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				33F489B92826233200C9385B /* Account */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		33F489B92826233200C9385B /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				33F489BA2826234800C9385B /* LocalStorageAccountProvider.swift */,
+			);
+			path = Account;
+			sourceTree = "<group>";
+		};
+		33F489BC2826237100C9385B /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				33F489BD2826237E00C9385B /* SystemConfiguration.swift */,
+			);
+			path = Configuration;
+			sourceTree = "<group>";
+		};
+		33F489BF2826247F00C9385B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				33F489C02826248A00C9385B /* Account.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		33F489C428262EC800C9385B /* Aptos */ = {
+			isa = PBXGroup;
+			children = (
+				33F489C528262EDD00C9385B /* Aptos.swift */,
+			);
+			path = Aptos;
+			sourceTree = "<group>";
+		};
 		90B9379D2BEEF9F0A25F7C44 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -213,12 +299,17 @@
 		D178AD9D28259CA4008E5DE1 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				33F489C428262EC800C9385B /* Aptos */,
+				33F489BF2826247F00C9385B /* Models */,
+				33F489BC2826237100C9385B /* Configuration */,
+				33F489B82826232D00C9385B /* Services */,
+				33F489B4282622BA00C9385B /* Libraries */,
+				33F489AB282618D400C9385B /* Onboarding */,
 				D178ADA128259D0D008E5DE1 /* Common */,
 				D178AE4E2825A12D008E5DE1 /* R.generated.swift */,
 				D11159D82809393F006CC3B8 /* ViewController.swift */,
 				D11159B328093752006CC3B8 /* AppDelegate.swift */,
 				B4390377268301EF007ED1C9 /* RustCall.swift */,
-				D178AE502825A1A2008E5DE1 /* OnboardingViewController.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -536,9 +627,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D178AE0C28259D0D008E5DE1 /* Operator.swift in Sources */,
+				33F489AD282618F600C9385B /* CreateTeamComponent.swift in Sources */,
 				D178AE3B28259D0D008E5DE1 /* Font.swift in Sources */,
 				D178AE2F28259D0D008E5DE1 /* SmoothRectLayer.swift in Sources */,
 				D178AE3328259D0D008E5DE1 /* SubscribableValue.swift in Sources */,
+				33F489C12826248A00C9385B /* Account.swift in Sources */,
 				D11159DA280939E7006CC3B8 /* AppDelegate.swift in Sources */,
 				D178ADFA28259D0D008E5DE1 /* HapticPlayer.swift in Sources */,
 				D178AE3228259D0D008E5DE1 /* AppTheme.swift in Sources */,
@@ -549,6 +642,7 @@
 				D178AE2B28259D0D008E5DE1 /* BaseEditNameViewController.swift in Sources */,
 				D178AE2228259D0D008E5DE1 /* CAShapeLayer+Extensions.swift in Sources */,
 				D11159D92809393F006CC3B8 /* ViewController.swift in Sources */,
+				33F489B7282622E000C9385B /* DefaultFileManager.swift in Sources */,
 				D178AE1728259D0D008E5DE1 /* CGSize+Extensions.swift in Sources */,
 				D178AE2D28259D0D008E5DE1 /* SmoothCornersView.swift in Sources */,
 				D178ADFD28259D0D008E5DE1 /* DurationFormatter.swift in Sources */,
@@ -565,13 +659,19 @@
 				D178AE1D28259D0D008E5DE1 /* UIView+Layout.swift in Sources */,
 				D178AE3528259D0D008E5DE1 /* LoadingBouncingButton.swift in Sources */,
 				D178AE1628259D0D008E5DE1 /* UIView+Extensions.swift in Sources */,
+				33F489AF28261D5E00C9385B /* CreateTeamView.swift in Sources */,
 				D178AE3628259D0D008E5DE1 /* RegularButton.swift in Sources */,
+				33F489B128261E2700C9385B /* JoinTeamComponent.swift in Sources */,
 				D178AE3A28259D0D008E5DE1 /* MeshGradientViewController.swift in Sources */,
 				D178AE0E28259D0D008E5DE1 /* Logger.swift in Sources */,
 				D178AE3428259D0D008E5DE1 /* Weak.swift in Sources */,
+				33F489BB2826234800C9385B /* LocalStorageAccountProvider.swift in Sources */,
 				D178AE1F28259D0D008E5DE1 /* ScrollView+Extensions.swift in Sources */,
+				33F489B328261F3100C9385B /* CreateAccountView.swift in Sources */,
+				33F489C628262EDD00C9385B /* Aptos.swift in Sources */,
 				D178AE1A28259D0D008E5DE1 /* UIDevice+Extensions.swift in Sources */,
 				D178AE2928259D0D008E5DE1 /* AppNavigationController.swift in Sources */,
+				33F489BE2826237E00C9385B /* SystemConfiguration.swift in Sources */,
 				D178AE3C28259D0D008E5DE1 /* GradientView.swift in Sources */,
 				D11159DE28093B01006CC3B8 /* RustCall.swift in Sources */,
 				D178AE512825A1A2008E5DE1 /* OnboardingViewController.swift in Sources */,
@@ -735,7 +835,7 @@
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2TE7AHNP9P;
+				DEVELOPMENT_TEAM = HRCTZ322K4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = App;
@@ -752,7 +852,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seb.aptos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahumay.aptos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -772,7 +872,7 @@
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2TE7AHNP9P;
+				DEVELOPMENT_TEAM = HRCTZ322K4;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = App;
@@ -789,7 +889,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seb.aptos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahumay.aptos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
