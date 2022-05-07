@@ -76,6 +76,7 @@
 		D178AE4C28259E6B008E5DE1 /* Shapiro Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D178AE4628259E6B008E5DE1 /* Shapiro Bold.ttf */; };
 		D178AE4F2825A12D008E5DE1 /* R.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = D178AE4E2825A12D008E5DE1 /* R.generated.swift */; };
 		D178AE512825A1A2008E5DE1 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D178AE502825A1A2008E5DE1 /* OnboardingViewController.swift */; };
+		FAA0C7AE28264181005F0321 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FAA0C7AD28264181005F0321 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -155,6 +156,7 @@
 		D178AE4E2825A12D008E5DE1 /* R.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = R.generated.swift; sourceTree = SOURCE_ROOT; };
 		D178AE502825A1A2008E5DE1 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		DCE6C68A9837CD61192BA3AE /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
+		FAA0C7AD28264181005F0321 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,6 +252,7 @@
 		B43903372682E485007ED1C9 = {
 			isa = PBXGroup;
 			children = (
+				FAA0C7AD28264181005F0321 /* GoogleService-Info.plist */,
 				D178AD9D28259CA4008E5DE1 /* Sources */,
 				D151EDA1281F31AC000D5E47 /* Protos */,
 				D11159B728093784006CC3B8 /* Resources */,
@@ -554,6 +557,7 @@
 				D178AE4928259E6B008E5DE1 /* Shapiro Bold Wide.ttf in Resources */,
 				D178AE4B28259E6B008E5DE1 /* Shapiro Semi Wide.ttf in Resources */,
 				D178AE4728259E6B008E5DE1 /* Shapiro Semi.ttf in Resources */,
+				FAA0C7AE28264181005F0321 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -835,7 +839,7 @@
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HRCTZ322K4;
+				DEVELOPMENT_TEAM = P52367JD97;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = App;
@@ -852,7 +856,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seb.aptos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aptos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -872,7 +876,7 @@
 				CODE_SIGN_ENTITLEMENTS = Resources/App.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HRCTZ322K4;
+				DEVELOPMENT_TEAM = P52367JD97;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = App;
@@ -889,7 +893,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.seb.aptos;
+				PRODUCT_BUNDLE_IDENTIFIER = com.aptos;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = YES;
