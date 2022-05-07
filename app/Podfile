@@ -6,4 +6,7 @@ target 'App' do
   pod 'R.swift'
 
   pod 'SwiftProtobuf'
+
+  pod 'FirebaseAnalytics'
+  pod 'FirebaseFirestore'
 end
